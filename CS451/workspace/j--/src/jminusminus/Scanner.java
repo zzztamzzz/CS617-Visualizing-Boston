@@ -97,7 +97,9 @@ class Scanner {
                         nextCh();
                     }
                 } else {
-                    reportScannerError("Operator / is not supported in j--");
+//                    reportScannerError("Operator / is not supported in j--");
+                    // Added Proj1 P2 for Division
+                    return new TokenInfo(DIV, line);
                 }
             } else {
                 moreWhiteSpace = false;
@@ -105,6 +107,10 @@ class Scanner {
         }
         line = input.line();
         switch (ch) {
+            // Added Proj1 P2 for RemainderOp
+            case '%':
+                nextCh();
+                return new TokenInfo(REM, line);
             case ',':
                 nextCh();
                 return new TokenInfo(COMMA, line);

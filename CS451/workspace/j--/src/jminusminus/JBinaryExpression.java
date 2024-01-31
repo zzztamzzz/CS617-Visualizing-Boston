@@ -192,7 +192,12 @@ class JDivideOp extends JBinaryExpression {
      * {@inheritDoc}
      */
     public JExpression analyze(Context context) {
-        // TODO
+        // Added Proj1 P2 for Division
+        lhs = (JExpression) lhs.analyze(context);
+        rhs = (JExpression) rhs.analyze(context);
+        lhs.type().mustMatchExpected(line(), Type.INT);
+        rhs.type().mustMatchExpected(line(), Type.INT);
+        type = Type.INT;
         return this;
     }
 
@@ -200,7 +205,10 @@ class JDivideOp extends JBinaryExpression {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        // Added Proj1 P2 for Division
+        lhs.codegen(output);
+        rhs.codegen(output);
+        output.addNoArgInstruction(IDIV);
     }
 }
 
@@ -223,7 +231,12 @@ class JRemainderOp extends JBinaryExpression {
      * {@inheritDoc}
      */
     public JExpression analyze(Context context) {
-        // TODO
+        // Added Proj1 P2 for Remainder
+        lhs = (JExpression) lhs.analyze((context));
+        rhs = (JExpression) rhs.analyze((context));
+        lhs.type().mustMatchExpected(line(), Type.INT);
+        rhs.type().mustMatchExpected(line(), Type.INT);
+        type = Type.INT;
         return this;
     }
 
@@ -231,7 +244,10 @@ class JRemainderOp extends JBinaryExpression {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        // Added Proj1 P2 for Remainder
+        lhs.codegen(output);
+        rhs.codegen(output);
+        output.addNoArgInstruction(IREM);
     }
 }
 
