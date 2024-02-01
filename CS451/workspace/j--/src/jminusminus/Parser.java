@@ -670,7 +670,8 @@ public class Parser {
      * Parses a conditional-and expression and returns an AST for it.
      *
      * <pre>
-     *   conditionalAndExpression ::= equalityExpression { LAND equalityExpression }
+     *   conditionalAndExpression ::= equalityExpression { LAND inclusiveOrExpression }
+     *
      * </pre>
      *
      * @return an AST for a conditional-and expression.
@@ -678,10 +679,86 @@ public class Parser {
     private JExpression conditionalAndExpression() {
         int line = scanner.token().line();
         boolean more = true;
-        JExpression lhs = equalityExpression();
+//        JExpression lhs = equalityExpression();
+        // Added Proj1 P3 BitwiseOp
+        JExpression lhs = inclusiveOrExpression();
         while (more) {
             if (have(LAND)) {
                 lhs = new JLogicalAndOp(line, lhs, equalityExpression());
+            } else {
+                more = false;
+            }
+        }
+        return lhs;
+    }
+
+    // Added proj1 p3 BitwiseOPs
+    /**
+     * Parses a inclusive-or expression and returns an AST for it.
+     *
+     * <pre>
+     *  inclusiveOrExpression ::= exclusiveOrExpression
+     *                              { OR exclusiveOrExpression }
+     * </pre>
+     *
+     * @return an AST for a inclusive-or expression.
+     */
+    private JExpression inclusiveOrExpression() {
+        int line = scanner.token().line();
+        boolean more = true;
+        JExpression lhs = exclusiveOrExpression();
+        while (more) {
+            if (have(OR)) {
+                lhs = new JOrOp(line, lhs, exclusiveOrExpression());
+            } else {
+                more = false;
+            }
+        }
+        return lhs;
+    }
+
+    // Added proj1 p3 BitwiseOPs
+    /**
+     * Parses an exclusive-or expression and returns an AST for it.
+     *
+     * <pre>
+     * exclusiveOrExpression ::= andExpression
+     *                             { XOR andExpression }
+     * </pre>
+     *
+     * @return an AST for an exclusive-or expression.
+     */
+    private JExpression exclusiveOrExpression() {
+        int line = scanner.token().line();
+        boolean more = true;
+        JExpression lhs = andExpression();
+        while (more) {
+            if (have(XOR)) {
+                lhs = new JXorOp(line, lhs, andExpression());
+            } else {
+                more = false;
+            }
+        }
+        return lhs;
+    }
+    // Added Proj1 P3 BitwiseOps
+    /**
+     * Parses an 'AND' expression and returns an AST for it.
+     *
+     * <pre>
+     * andExpression ::= equalityExpression
+     *                      { AND equalityExpression }
+     * </pre>
+     *
+     * @return an AST for an and expression.
+     */
+    private JExpression andExpression() {
+        int line = scanner.token().line();
+        boolean more = true;
+        JExpression lhs = equalityExpression();
+        while (more) {
+            if (have(AND)) {
+                lhs = new JAndOp(line, lhs, equalityExpression());
             } else {
                 more = false;
             }
@@ -711,6 +788,32 @@ public class Parser {
         }
         return lhs;
     }
+    // Added Proj1 P4
+
+    /**
+     * Parses a shift expression and returns an AST for it.
+     *
+     * <pre>
+     *   shiftExpression ::= additiveExpression
+     *      { ( ALSHIFT | ARSHIFT | LOGRSHIFT ) additiveExpression }
+     *
+     * </pre>
+     *
+     * @return an AST for a shift expression.
+     */
+    private JExpression shiftExpression() {
+        int line = scanner.token().line();
+        JExpression lhs = additiveExpression();
+        if (have(ALSHIFT)) {
+            return new JALeftShiftOp(line, lhs, additiveExpression());
+        } else if (have(ARSHIFT)) {
+            return new JARightShiftOp(line, lhs, additiveExpression());
+        } else if (have(LARSHIFT)) {
+            return new JLRightShiftOp(line, lhs, additiveExpression());
+        } else {
+            return lhs;
+        }
+    }
 
     /**
      * Parses a relational expression and returns an AST for it.
@@ -724,11 +827,14 @@ public class Parser {
      */
     private JExpression relationalExpression() {
         int line = scanner.token().line();
-        JExpression lhs = additiveExpression();
+//        JExpression lhs = additiveExpression();
+        JExpression lhs  = shiftExpression();
         if (have(GT)) {
-            return new JGreaterThanOp(line, lhs, additiveExpression());
+//            return new JGreaterThanOp(line, lhs, additiveExpression());
+            return new JGreaterEqualOp(line, lhs, shiftExpression());
         } else if (have(LE)) {
-            return new JLessEqualOp(line, lhs, additiveExpression());
+//            return new JLessEqualOp(line, lhs, additiveExpression());
+            return new JLessEqualOp(line, lhs, shiftExpression());
         } else if (have(INSTANCEOF)) {
             return new JInstanceOfOp(line, lhs, referenceType());
         } else {
@@ -825,6 +931,7 @@ public class Parser {
      *
      * <pre>
      *   simpleUnaryExpression ::= LNOT unaryExpression
+     *                           | NOT bitwise opeartion unaryExpression
      *                           | LPAREN basicType RPAREN unaryExpression
      *                           | LPAREN referenceType RPAREN simpleUnaryExpression
      *                           | postfixExpression
@@ -836,7 +943,12 @@ public class Parser {
         int line = scanner.token().line();
         if (have(LNOT)) {
             return new JLogicalNotOp(line, unaryExpression());
-        } else if (seeCast()) {
+        }
+        // Added Proj1 P3 for BitwiseOP ~
+        else if (have(NOT)){
+            return new JComplementOp(line, unaryExpression());
+        }
+        else if (seeCast()) {
             mustBe(LPAREN);
             boolean isBasicType = seeBasicType();
             Type type = type();

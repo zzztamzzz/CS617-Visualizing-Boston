@@ -21,8 +21,14 @@ enum TokenKind {
     ASSIGN("="), DEC("--"), EQUAL("=="), GT(">"), INC("++"), LAND("&&"), LE("<="), LNOT("!"),
     MINUS("-"), PLUS("+"), PLUS_ASSIGN("+="), STAR("*"),
 
-    // Added proj1 p2
+    // Added Proj1 p2
     DIV("/"), REM("%"),
+
+    // Added Proj1 P3. Bitwise Operations
+    NOT("~"), OR("|"), XOR("^"), AND("&"),
+
+    // Added Proj1 P4 ShiftOps
+    ALSHIFT("<<"), ARSHIFT(">>"), LARSHIFT(">>>"),
 
     // Separators.
     COMMA(","), DOT("."), LBRACK("["), LCURLY("{"), LPAREN("("), RBRACK("]"), RCURLY("}"),

@@ -111,6 +111,16 @@ class Scanner {
             case '%':
                 nextCh();
                 return new TokenInfo(REM, line);
+            // Added Proj1 P3 for BitwiseOPs ~, |, ^
+            case '~':
+                nextCh();
+                return new TokenInfo(NOT, line);
+            case '|':
+                nextCh();
+                return new TokenInfo(OR, line);
+            case '^':
+                nextCh();
+                return new TokenInfo(XOR, line);
             case ',':
                 nextCh();
                 return new TokenInfo(COMMA, line);
@@ -170,13 +180,28 @@ class Scanner {
                 }
             case '>':
                 nextCh();
+                // Added Proj1 P4 ShiftOps
+                if (ch == '>') {
+                    nextCh();
+                    if (ch == '>') {
+                        nextCh();
+                        return new TokenInfo(LARSHIFT, line);
+                    }
+                    return new TokenInfo(ARSHIFT, line);
+                }
                 return new TokenInfo(GT, line);
             case '<':
                 nextCh();
                 if (ch == '=') {
                     nextCh();
                     return new TokenInfo(LE, line);
-                } else {
+                }
+                // Added Proj1 p4
+                else if (ch == '<'){
+                    nextCh();
+                    return new TokenInfo(ALSHIFT, line);
+                }
+                else {
                     reportScannerError("Operator < is not supported in j--");
                     return getNextToken();
                 }
@@ -189,8 +214,10 @@ class Scanner {
                     nextCh();
                     return new TokenInfo(LAND, line);
                 } else {
-                    reportScannerError("Operator & is not supported in j--");
-                    return getNextToken();
+//                    reportScannerError("Operator & is not supported in j--");
+//                    return getNextToken();
+                    // Added Proj 1 P3 for AND Bitwise Operations
+                    return new TokenInfo(AND, line);
                 }
             case '\'':
                 buffer = new StringBuffer();
