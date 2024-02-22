@@ -30,6 +30,19 @@ enum TokenKind {
     // Added Proj1 P4 ShiftOps
     ALSHIFT("<<"), ARSHIFT(">>"), LARSHIFT(">>>"),
 
+    // Added for Proj2 P2. Make sure no duplicate operators are present
+    QUESTION_MARK("?"), COLON(":"), NOT_EQUALS("!="),
+    DIVIDE_ASSIGN("/="), DECREMENT("-="), PROD_ASSIGN("*="),
+    MOD_ASSIGN("%="), ARSHIFT_ASSIGN(">>="), LOGRSHIFT_ASSIGN(">>>="),
+    ALSHIFT_ASSIGN("<<="), COMPARE_LESS("<"), XOR_ASSIGN("^="),
+    OR_ASSIGN("|="), LOR("||"), AND_ASSIGN("&="), GREAT_EQUAL(">="),
+
+    // Added Project2 P3 Reserved Words
+    BREAK("break"), CASE("case"), CATCH("catch"), CONTINUE("continue"), DEFAULT("default"),
+    DO("do"), DOUBLE("double"), FINALLY("finally"), FOR("for"), IMPLEMENTS("implements"),
+    INTERFACE("interface"), LONG("long"), SWITCH("switch"), THROW("throw"), THROWS("throws"),
+    TRY("try"),
+
     // Separators.
     COMMA(","), DOT("."), LBRACK("["), LCURLY("{"), LPAREN("("), RBRACK("]"), RCURLY("}"),
     RPAREN(")"), SEMI(";"),
@@ -39,9 +52,10 @@ enum TokenKind {
 
     // Literals.
     CHAR_LITERAL("<CHAR_LITERAL>"), FALSE("false"), INT_LITERAL("<INT_LITERAL>"), NULL("null"),
-    STRING_LITERAL("<STRING_LITERAL>"), TRUE("true");
+    STRING_LITERAL("<STRING_LITERAL>"), TRUE("true"),
 
-    // The token kind's string representation.
+    // Added Proj2 P4
+    LONG_LITERAL("<LONG_LITERAL>"), DOUBLE_LITERAL("<DOUBLE_LITERAL>");   // The token kind's string representation.
     private String image;
 
     /**
