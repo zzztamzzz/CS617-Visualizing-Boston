@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple D3.js Line Chart</title>
+    <!-- Include D3.js from CDN -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        /* Basic styles for the chart */
+        .line {
+            fill: none;
+            stroke: steelblue;
+            stroke-width: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Container for the line chart -->
+    <svg width="600" height="400"></svg>
+
+    <script>
+        // Sample data: array of objects with date and value properties
+        const data = [
+            { date: new Date(2020, 0, 1), value: 30 },
+            { date: new Date(2020, 1, 1), value: 50 },
+            { date: new Date(2020, 2, 1), value: 80 },
+            { date: new Date(2020, 3, 1), value: 20 },
+            { date: new Date(2020, 4, 1), value: 60 }
+        ];
+
+        const svg = d3.select('svg');
+        const margin = { top: 20, right: 20, bottom: 30, left: 50 };
+        const width = +svg.attr('width') - margin.left - margin.right;
+        const height = +svg.attr('height') - margin.top - margin.bottom;
+        const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+        // Scales
+        const x = d3.scaleTime().rangeRound([0, width]);
+        const y = d3.scaleLinear().rangeRound([height, 0]);
+
+        // Line generator
+        const line = d3.line()
+            .x(d => x(d.date))
+            .y(d => y(d.value));
+
+        x.domain(d3.extent(data, d => d.date));
+        y.domain([0, d3.max(data, d => d.value)]);
+
+        // Append the x-axis
+        g.append('g')
+            .attr('transform', `translate(0,${height})`)
+            .call(d3.axisBottom(x));
+
+        // Append the y-axis
+        g.append('g')
+            .call(d3.axisLeft(y));
+
+        // Append the line path
+        g.append('path')
+            .datum(data)
+            .attr('class', 'line')
+            .attr('d', line);
+    </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Random Circles with D3.js</title>
+	<style>
+		body {
+			background-color: #f0f0f0;
+		}
+		svg {
+			border: 1px solid black;
+		}
+	</style>
+</head>
+<body>
+	<svg id="circleContainer" width="100%" height="100%"></svg>
+	<script src="https://d3js.org/d3.v7.min.js"></script>
+	<script>
+		// JavaScript code goes here
+    const container = d3.select("#circleContainer");
+    const width = container.node().clientWidth;
+    const height = container.node().clientHeight;
+
+for (let i = 0; i < 100; i++) {
+  const circle = container.append("circle")
+    .attr("cx", Math.random() * width)
+    .attr("cy", Math.random() * height)
+    .attr("r", Math.random() * 20 + 5) // Random radius between 5 and 25
+    .style("fill", `hsl(${Math.random() * 360}, 50%, 75%)`); // Random color
+}
+	</script>
+</body>
+</html>
