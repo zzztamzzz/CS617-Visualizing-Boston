@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animated 100 Circles spawns with Color Variation</title>
+<style>
+    #svgContainer {
+        border: 1px solid #ccc;
+        width: 100%;
+        height: 100vh; /* Use the full viewport height */
+    }
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const svgNS = "http://www.w3.org/2000/svg";
+    let circleCount = 0;
+    const maxCircles = 100;
+
+    function addCircle() {
+        if (circleCount >= maxCircles) return;
+
+        const circle = document.createElementNS(svgNS, "circle");
+        const cx = Math.random() * window.innerWidth;
+        const cy = Math.random() * window.innerHeight;
+        const r = Math.random() * 50 + 5; // Radius between 5 and 55
+        const color = `hsl(${Math.random() * 360}, 100%, 50%)`; // Full saturation and brightness, random hue
+
+        circle.setAttributeNS(null, 'cx', cx);
+        circle.setAttributeNS(null, 'cy', cy);
+        circle.setAttributeNS(null, 'r', 0); // Start with radius 0
+        circle.setAttributeNS(null, 'fill', color);
+        circle.setAttributeNS(null, 'opacity', 0.5); // Start with lower opacity
+
+        document.getElementById('svgContainer').appendChild(circle);
+
+        // Animate the radius and opacity
+        let currentRadius = 0;
+        const radiusInterval = setInterval(() => {
+            if (currentRadius < r) {
+                currentRadius++;
+                circle.setAttributeNS(null, 'r', currentRadius);
+                circle.setAttributeNS(null, 'opacity', (currentRadius / r) * 1); // Gradually increase opacity
+            } else {
+                clearInterval(radiusInterval);
+            }
+        }, 10);
+
+        circleCount++;
+    }
+
+    setInterval(addCircle, 1000);
+});
+</script>
+</head>
+<body>
+<svg id="svgContainer"></svg>
+</body>
+</html>
