@@ -6,9 +6,11 @@
 <title>Animated 100 Circles spawns with Color Variation</title>
 <style>
     #svgContainer {
-        border: 1px solid #ccc;
+        border: 2px solid black;
+        /* background-color: black; */
         width: 100%;
         height: 100vh; /* Use the full viewport height */
+        overflow:hidden;
     }
 </style>
 <script>
@@ -20,17 +22,19 @@ document.addEventListener('DOMContentLoaded', function() {
     function addCircle() {
         if (circleCount >= maxCircles) return;
 
+        // Circle properties
         const circle = document.createElementNS(svgNS, "circle");
         const cx = Math.random() * window.innerWidth;
         const cy = Math.random() * window.innerHeight;
         const r = Math.random() * 50 + 5; // Radius between 5 and 55
         const color = `hsl(${Math.random() * 360}, 100%, 50%)`; // Full saturation and brightness, random hue
 
+        // Make it fancy
         circle.setAttributeNS(null, 'cx', cx);
         circle.setAttributeNS(null, 'cy', cy);
-        circle.setAttributeNS(null, 'r', 0); // Start with radius 0
+        circle.setAttributeNS(null, 'r', 0); // Start with radius 0 upto r-value
         circle.setAttributeNS(null, 'fill', color);
-        circle.setAttributeNS(null, 'opacity', 0.5); // Start with lower opacity
+        circle.setAttributeNS(null, 'opacity', 0.5); // Start with lower opacity for fade-in
 
         document.getElementById('svgContainer').appendChild(circle);
 
