@@ -180,17 +180,17 @@ class Scanner {
             case ',':
                 nextCh();
                 return new TokenInfo(COMMA, line);
-            case '.':
-                nextCh();
-                // Added Proj2 P4
-                if (isDigit(ch)) {
-                    buffer = new StringBuffer();
-                    buffer.append(".");
-                    // Helper method, check line 468
-                    processDouble(buffer);
-                    return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
-                }
-                return new TokenInfo(DOT, line);
+//            case '.':
+//                nextCh();
+//                // Added Proj2 P4
+//                if (isDigit(ch)) {
+//                    buffer = new StringBuffer();
+//                    buffer.append(".");
+//                    // Helper method, check line 468
+//                    processDouble(buffer);
+//                    return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+//                }
+//                return new TokenInfo(DOT, line);
             case '[':
                 nextCh();
                 return new TokenInfo(LBRACK, line);
@@ -370,6 +370,7 @@ class Scanner {
                 return new TokenInfo(STRING_LITERAL, buffer.toString(), line);
             case EOFCH:
                 return new TokenInfo(EOF, line);
+            case '.':
             case '0':
             case '1':
             case '2':
@@ -385,47 +386,98 @@ class Scanner {
                Added Proj2 P4
                Call to helper method. Details on line 451
                */
-                processDigits(buffer);
+//                processDigits(buffer);
+//                if (ch == '.') {
+//                    buffer.append(ch);
+//                    nextCh();
+//                    while (isDigit(ch)) {
+//                        buffer.append(ch);
+//                        nextCh();
+//                    }
+//                }
+//                if (isLong(ch)) { // Detect and assign longs
+//                    buffer.append(ch);
+//                    nextCh();
+//                    return new TokenInfo(LONG_LITERAL, buffer.toString(), line);
+//                }
+//
+//                if (isExponent(ch)) { // Detect double longs with "+"' and "_'
+//                    buffer.append(ch);
+//                    nextCh();
+//                    if (ch == '+' || ch == '-') {
+//                        buffer.append(ch);
+//                        nextCh();
+//                    }
+//                    // Continue scanning for numbers in double even with the + or -
+//                    while (isDigit(ch)) {
+//                        buffer.append(ch);
+//                        nextCh();
+//                    }
+//                }
+//                if (isDouble(ch) || buffer.toString().contains(".") || buffer.toString().contains("e") || buffer.toString().contains("E")) {
+//                    if (isDouble(ch)) {
+//                        buffer.append(ch);
+//                        nextCh();
+//                    }
+//                    return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+//                } else if (isLong(ch)) {
+//                    buffer.append(ch);
+//                    nextCh();
+//                    return new TokenInfo(LONG_LITERAL, buffer.toString(), line);
+//                } else {
+//                    return new TokenInfo(INT_LITERAL, buffer.toString(), line);
+//                }
+                buffer = new StringBuffer();
+                if (isDigit(ch)) {
+                    buffer.append(digits());
+                    if (ch != '.' && ch != 'd' && ch != 'D' && ch != 'e' && ch != 'E' &&
+                            ch != 'l' && ch != 'L') {
+                        return new TokenInfo(INT_LITERAL, buffer.toString(), line);
+                    }
+                    TokenInfo token = suffix(buffer); // double, long, or null
+                    if (token != null) {
+                        return token;
+                    }
+                    if (ch == '.') {
+                        buffer.append(ch);
+                        nextCh();
+                    }
+                    buffer.append(digits());
+                    if (ch == 'd' || ch == 'D') {
+                        buffer.append(ch);
+                        nextCh();
+                        return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                    }
+                    if (ch == 'e' || ch == 'E') {
+                        buffer.append(exp());
+                        if (ch == 'd' || ch == 'D') {
+                            buffer.append(ch);
+                            nextCh();
+                            return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                        }
+                    }
+                    return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                }
                 if (ch == '.') {
                     buffer.append(ch);
                     nextCh();
-                    while (isDigit(ch)) {
-                        buffer.append(ch);
-                        nextCh();
+                    if (!isDigit(ch)) {
+                        return new TokenInfo(DOT, line);
                     }
-                }
-                if (isLong(ch)) { // Detect and assign longs
-                    buffer.append(ch);
-                    nextCh();
-                    return new TokenInfo(LONG_LITERAL, buffer.toString(), line);
-                }
-
-                if (isExponent(ch)) { // Detect double longs with "+"' and "_'
-                    buffer.append(ch);
-                    nextCh();
-                    if (ch == '+' || ch == '-') {
-                        buffer.append(ch);
-                        nextCh();
+                    buffer.append(digits());
+                    if (ch == 'e' || ch == 'E') {
+                        buffer.append(exp());
                     }
-                    // Continue scanning for numbers in double even with the + or -
-                    while (isDigit(ch)) {
-                        buffer.append(ch);
-                        nextCh();
-                    }
-                }
-                if (isDouble(ch) || buffer.toString().contains(".") || buffer.toString().contains("e") || buffer.toString().contains("E")) {
-                    if (isDouble(ch)) {
+                    if (ch == 'd' || ch == 'D') {
                         buffer.append(ch);
                         nextCh();
                     }
                     return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
-                } else if (isLong(ch)) {
-                    buffer.append(ch);
-                    nextCh();
-                    return new TokenInfo(LONG_LITERAL, buffer.toString(), line);
-                } else {
-                    return new TokenInfo(INT_LITERAL, buffer.toString(), line);
                 }
+
+                // Shouldn't get here.
+                reportScannerError("Freak out!", ch);
+                return getNextToken();
             default:
                 if (isIdentifierStart(ch)) {
                     buffer = new StringBuffer();
@@ -457,12 +509,12 @@ class Scanner {
     to the buffer before looking at the next character.
     Loop breaks when a non-digit character is seen.
      */
-    private void processDigits(StringBuffer buffer) {
-        while (isDigit(ch)) {
-            buffer.append(ch);
-            nextCh();
-        }
-    }
+//    private void processDigits(StringBuffer buffer) {
+//        while (isDigit(ch)) {
+//            buffer.append(ch);
+//            nextCh();
+//        }
+//    }
 
     /*
     This method is responsible for exponents, which in java look like "e+10" or "E-5".
@@ -470,15 +522,15 @@ class Scanner {
     'e' from the above example, is appended first, then '+' or '-', then it calls the other
     helper method described below this one, which is taking care of digits within the exponents.
      */
-    private void exponentCheck(StringBuffer buffer) {
-        buffer.append(ch);
-        nextCh();
-        if (ch == '+' || ch == '-') {
-            buffer.append(ch);
-            nextCh();
-        }
-        processDigits(buffer);
-    }
+//    private void exponentCheck(StringBuffer buffer) {
+//        buffer.append(ch);
+//        nextCh();
+//        if (ch == '+' || ch == '-') {
+//            buffer.append(ch);
+//            nextCh();
+//        }
+//        processDigits(buffer);
+//    }
     /*
     A method to deal with doubles in general.
     With every append, this method will also call the previous two methods.
@@ -489,18 +541,18 @@ class Scanner {
     A final check is done for the '.' in the doubles, allowing doubles like "1234567890.e135'
     to be scanned properly.
      */
-    private void processDouble(StringBuffer buffer) {
-        buffer.append(ch);
-        nextCh();
-        processDigits(buffer);
-        if (isExponent(ch)) {
-            exponentCheck(buffer);
-        }
-        if (isDouble(ch)) {
-            buffer.append(ch);
-            nextCh();
-        }
-    }
+//    private void processDouble(StringBuffer buffer) {
+//        buffer.append(ch);
+//        nextCh();
+//        processDigits(buffer);
+//        if (isExponent(ch)) {
+//            exponentCheck(buffer);
+//        }
+//        if (isDouble(ch)) {
+//            buffer.append(ch);
+//            nextCh();
+//        }
+//    }
 
     /**
      * Returns true if an error has occurred, and false otherwise.
@@ -573,20 +625,20 @@ class Scanner {
     }
 
     // Added Proj2 for p4. 'isLong', 'isExponent', 'isDouble'
-    // Returns true if the specified character is a l or L, and false otherwise.
-    private boolean isLong(char c) {
-        return c == 'l' || c == 'L';
-    }
-
-    // Returns true if the specified character is a e or E, and false otherwise.
-    private boolean isExponent(char c) {
-        return c == 'e' || c == 'E';
-    }
-
-    // Returns true if the specified character is a d or D, and false otherwise.
-    private boolean isDouble(char c) {
-        return c == 'd' || c == 'D';
-    }
+//    // Returns true if the specified character is a l or L, and false otherwise.
+//    private boolean isLong(char c) {
+//        return c == 'l' || c == 'L';
+//    }
+//
+//    // Returns true if the specified character is a e or E, and false otherwise.
+//    private boolean isExponent(char c) {
+//        return c == 'e' || c == 'E';
+//    }
+//
+//    // Returns true if the specified character is a d or D, and false otherwise.
+//    private boolean isDouble(char c) {
+//        return c == 'd' || c == 'D';
+//    }
 
     // Returns true if the specified character is a digit (0-9), and false otherwise.
     private boolean isDigit(char c) {
@@ -607,6 +659,52 @@ class Scanner {
     // otherwise.
     private boolean isIdentifierPart(char c) {
         return (isIdentifierStart(c) || isDigit(c));
+    }
+
+    // Scans and returns a string of digits (0-9).
+    private String digits() {
+        StringBuffer buffer = new StringBuffer();
+        while (isDigit(ch)) {
+            buffer.append(ch);
+            nextCh();
+        }
+        return buffer.toString();
+    }
+
+    // Scans and returns the exponent grammar rule.
+    //    EXPONENT       ::= ( "e" | "E" ) [ ( "+" | "-" ) ] DIGITS
+    private String exp() {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(ch);
+        nextCh();
+        if (ch == '+' || ch == '-') {
+            buffer.append(ch);
+            nextCh();
+        }
+        String digits = digits();
+        buffer.append(digits);
+        if (digits.length() == 0) {
+            reportScannerError("malformed exponent " + buffer.toString());
+        }
+        return buffer.toString();
+    }
+
+    // Returns the TokenInfo object for the literal represented by the given buffer based on the
+    // suffix ("d" | "D") for doubles and ("l" | "L") for longs, or null.
+    private TokenInfo suffix(StringBuffer buffer) {
+        switch (ch) {
+            case 'd':
+            case 'D':
+                buffer.append(ch);
+                nextCh();
+                return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+            case 'l':
+            case 'L':
+                buffer.append(ch);
+                nextCh();
+                return new TokenInfo(LONG_LITERAL, buffer.toString(), line);
+        }
+        return null;
     }
 }
 
