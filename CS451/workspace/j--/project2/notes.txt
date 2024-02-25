@@ -1,29 +1,7 @@
 1. Provide a high-level description (ie, using minimal amount of technical
    jargon) of the project in no more than 200 words.
 
-   The purpose of this project was to enhance the base compiler in
-   order to properly recognize the follow concepts:
-   1. Ignoring Sections:
-      - Ignore and overlook multiple sections and lines of text that have
-        the markers within the code file itself but still look at the instructions.
-   2. Symbol Recognition:
-      - A bunch of new symbols were introduced, which can be considered as a
-        set of instructions. We also ensured that the compiler could identify
-        and understand them correctly since different symbols provide different
-        rules and directions.
-   3. Keyword Detection:
-      - In any language, certain words hold more weight. We added a feature
-        for our program to pinpoint these significant words when they appear in the text.
-   4. Identifying Numbers:
-      - Lastly, we made the program more adept at spotting and differentiating
-        between particular numerical values, without any shortcuts.
-
-   Alongside the provided set of instructions, there were test files given to ensure
-   the introduction to the above concepts were correctly made. Giving the compiler some
-   texts to process, ensuring our changes worked as intended.
-
-   This project was both challenging and rewarding, giving us a deeper insight
-   into how programming languages can be broken down and understood.
+   ...
 
 2. Did you receive help from anyone? List their names, status (classmate, 
    CS451/651 grad, TA, other), and the nature of help received.
@@ -38,26 +16,3 @@
    doing it.
 
    ...
-
-4. Notes to self
-   Here are some notes I made for the transition diagram regarding Problem 4 about ints, longs and double literals.
-  '->' means the transition.
-
-   State A: Start state.
-     - All 0 to 9 digits -> State B (Integer state, example 145)
-     - Detect a '.' -> State D (possible double state)
-
-   State B: Integer state.
-     - On 2nd scan, detect digits 0 to 9 → Stay in State B
-     - Detect 'L' or 'l' → State C (long state, example 145L or 145l)
-     - Detect '.' again → State E (double state, .145 or 279.145)
-
-   State C: Final state (long).
-
-   State D: After '.' AND without leading digits.
-     - On 3rd scan, spot any digit 0-9 → State E (double state)
-
-   State E: Decimal digits of a double.
-     - Digit [0-9] → Stay in State E
-
-   State F: Final state (confirmed double).
