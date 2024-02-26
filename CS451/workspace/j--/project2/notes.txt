@@ -1,7 +1,26 @@
 1. Provide a high-level description (ie, using minimal amount of technical
    jargon) of the project in no more than 200 words.
 
-   ...
+   The purpose of this project was to enhance the base compiler in
+   order to properly recognize the follow concepts:
+      1. Ignoring Sections:
+         - Ignore and overlook multiple sections and lines of text that have
+           the markers within the code file itself but still look at the instructions.
+      2. Symbol Recognition:
+         - A bunch of new symbols were introduced, which can be considered as a
+           set of instructions. We also ensured that the compiler could identify
+           and understand them correctly since different symbols provide different
+           rules and directions.
+      3. Keyword Detection:
+         -  In any language, certain words hold more weight.
+            We added a feature for our program to pinpoint these significant
+            words when they appear in the text.
+      4. Identifying Numbers:
+         - Lastly, we made the program more adept at spotting
+           and differentiating between particular numerical values, without any shortcuts.
+
+      The general intent of this project is to provide an insightful lesson about how
+      programming languages can be broken down and understood from the core.
 
 2. Did you receive help from anyone? List their names, status (classmate, 
    CS451/651 grad, TA, other), and the nature of help received.
@@ -10,7 +29,7 @@
    ----               ------       -------------
 
    ...                ...          ...
-
+z
 3. List any other comments here. Feel free to provide any feedback on how
    much you learned from doing the assignment, and whether you enjoyed
    doing it.
