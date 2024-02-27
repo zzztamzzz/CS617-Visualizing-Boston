@@ -1,0 +1,70 @@
+<!-- With the help of ChatGPT -->
+<html>
+<head>
+<title>Animated 100 Circles spawns with Color Variation</title>
+
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden; /* no scrollbar */
+    }
+    #svgContainer {
+        background-color: black;
+        /* occupy full window space dynamically */
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const svgNS = "http://www.w3.org/2000/svg";
+    let circleCount = 0;
+    const maxCircles = 100;
+
+    function addCircle() {
+        if (circleCount >= maxCircles) return;
+
+        // Ball properties
+        const circle = document.createElementNS(svgNS, "circle");
+        const cx = Math.random() * window.innerWidth;
+        const cy = Math.random() * window.innerHeight;
+        const r = Math.random() * 50 + 5; // Radius between 5 and 55
+        const color = `hsl(${Math.random() * 360}, 100%, 50%)`; // Full saturation and brightness, random hue
+
+        // Make it fancy
+        circle.setAttributeNS(null, 'cx', cx);
+        circle.setAttributeNS(null, 'cy', cy);
+        circle.setAttributeNS(null, 'r', 0); // Start with radius 0 upto r-value
+        circle.setAttributeNS(null, 'fill', color);
+        circle.setAttributeNS(null, 'opacity', 0.5); // Start with lower opacity for fade-in
+
+        document.getElementById('svgContainer').appendChild(circle);
+
+        // Animate the radius and opacity
+        let currentRadius = 0;
+        const radiusInterval = setInterval(() => {
+            if (currentRadius < r) {
+                currentRadius++;
+                circle.setAttributeNS(null, 'r', currentRadius);
+                circle.setAttributeNS(null, 'opacity', (currentRadius / r) * 1); // Gradually increase opacity
+            } else {
+                clearInterval(radiusInterval);
+            }
+        }, 10);
+
+        circleCount++;
+    }
+    // Spawn speed
+    setInterval(addCircle, 1000);
+});
+</script>
+</head>
+
+<body>
+<svg id="svgContainer"></svg>
+</body>
+
+</html>
