@@ -1,6 +1,7 @@
 <html>
 <head>
 <title>Animated 100 Circles with D3 and Color Variation</title>
+
 <style>
 html, body {
     margin: 0;
@@ -57,10 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         circleCount++;
     }
-
-    // Adjust the spawn speed here if needed
-    const spawnInterval = 100; // Milliseconds between spawns
-    d3.interval(addCircle, spawnInterval);
+    d3.interval(addCircle, 1000);
 });
 </script>
 </body>
