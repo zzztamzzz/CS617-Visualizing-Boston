@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bar Chart Visualization</title>
+<style>
+  .bar:hover {
+    fill: lightblue;
+  }
+  text {
+    font-size: 12px;
+    text-anchor: middle;
+  }
+</style>
+</head>
+<body>
+
+<svg width="600" height="400">
+  <!-- Example bars for the bar chart -->
+  <!-- Adjust the x, y, width, and height attributes based on your data -->
+  <rect x="50" y="100" width="50" height="150" fill="teal" class="bar"></rect>
+  <rect x="150" y="50" width="50" height="200" fill="teal" class="bar"></rect>
+
+  <!-- Labels for each bar (e.g., year) -->
+  <text x="75" y="270">2010</text>
+  <text x="175" y="270">2011</text>
+</svg>
+
+</body>
+</html>

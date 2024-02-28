@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Rainfall Visualization</title>
+<style>
+  rect:hover {
+    fill: lightblue;
+  }
+  circle:hover {
+    fill: red;
+  }
+  .tooltip {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    border: 1px solid #d4d4d4;
+    border-radius: 3px;
+    padding: 6px;
+    font-size: 14px;
+    color: black;
+  }
+</style>
+</head>
+<body>
+
+<svg width="600" height="400">
+  <!-- Bar chart for yearly rainfall -->
+  <!-- Example bar (year 2010, rainfall 100mm) -->
+  <rect x="10" y="50" width="40" height="100" fill="teal" class="bar" data-rainfall="100mm"></rect>
+
+  <!-- Line graph for the same data -->
+  <!-- Example path (simplified) -->
+  <path d="M10 150 L50 100 L90 120" stroke="black" fill="none"></path>
+
+  <!-- Circles for data points on the line -->
+  <circle cx="10" cy="150" r="4" fill="orange" class="point" data-year="2010" data-rainfall="80mm"></circle>
+</svg>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+  document.querySelectorAll('.bar, .point').forEach(element => {
+    element.addEventListener('mouseover', function() {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.innerHTML = `Rainfall: ${this.getAttribute('data-rainfall')}`;
+      tooltip.style.display = 'block';
+      tooltip.style.left = `${event.pageX + 10}px`;
+      tooltip.style.top = `${event.pageY + 10}px`;
+    });
+
+    element.addEventListener('mouseout', function() {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.style.display = 'none';
+    });
+  });
+</script>
+
+</body>
+</html>
