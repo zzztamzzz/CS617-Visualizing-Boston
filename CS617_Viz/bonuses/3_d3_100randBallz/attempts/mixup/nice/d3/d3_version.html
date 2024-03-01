@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .style("width", `0px`)
             .style("height", `0px`)
             .style("background-color", color)
-            // .attr("class", "circle")
+            .attr("class", "circle")
             .transition()
             .duration(1000) // Animation duration
             .style("width", `${size}px`)
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         circleCount++;
     }
-    d3.interval(addCircle, 1000);
+    d3.interval(addCircle, 10);
 });
 </script>
 </body>
