@@ -4,10 +4,26 @@
     <meta charset="UTF-8">
     <title>Rainfall Visualization</title>
     <style>
-        /* Add some basic styling */
+        /* Use flexbox to center the SVG in the body */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
         svg {
             font-family: Arial, sans-serif;
             background-color: whitesmoke;
+            /* Set the SVG to take up a certain percentage of the viewport, making it responsive */
+            width: 90vw; /* Adjust based on your needs */
+            height: 80vh; /* Adjust based on your needs */
+            max-width: 800px; /* Optional: limit the size so it doesn't get too large */
+            max-height: 600px; /* Optional: limit the size so it doesn't get too large */
+        }
+        #svgContainer{
+            width: 100vh;
+            height: 100vw;
             overflow: hidden;
         }
         .axis-label {
@@ -17,14 +33,32 @@
     </style>
 </head>
 <body>
-    <svg width="800" height="600" viewBox="0 0 800 600">
+    <svg viewBox="0 0 800 600">
         <!-- Manually calculated polyline points based on the provided data -->
         <polyline fill="none" stroke="blue" stroke-width="2"
                   points="0,592.55 50,122.22 100,283.53 150,284.52 200,250.13 250,411.04 300,357.6 350,282.19 400,78.98 450,182.08 500,253.11 550,247.36 600,360.5 650,65.11"/>
 
         <!-- Add labels for the axes -->
-        <text x="400" y="590" class="axis-label" text-anchor="middle">Year</text>
-        <text x="10" y="300" class="axis-label" transform="rotate(-90 10,300)" text-anchor="middle">Rainfall</text>
+        <text x="400" y="590" class="axis-label" text-anchor="middle">Years</text>
+        <text x="10" y="300" class="axis-label" transform="rotate(-90 10,300)" text-anchor="middle">Rainfall measured in inches</text>
+        
+        <!-- Add simple black axis lines with arrows -->
+        <!-- X-axis -->
+        <line x1="0" y1="600" x2="800" y2="600" stroke="black" stroke-width="2" marker-end="url(#arrowhead-right)"/>
+        <!-- Y-axis -->
+        <line x1="0" y1="600" x2="0" y2="0" stroke="black" stroke-width="2" marker-end="url(#arrowhead-up)"/>
+
+        <!-- Define arrowheads -->
+        <defs>
+            <marker id="arrowhead-right" markerWidth="10" markerHeight="7" 
+                refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="black"/>
+            </marker>
+            <marker id="arrowhead-up" markerWidth="10" markerHeight="7" 
+                refX="5" refY="7" orient="auto-start-reverse">
+                <polygon points="0 7, 5 0, 10 7" fill="black"/>
+            </marker>
+        </defs>
     </svg>
 </body>
 </html>
