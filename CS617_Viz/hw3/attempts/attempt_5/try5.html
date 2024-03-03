@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SVG Data Points Visualization</title>
+    <style>
+        svg { border: 1px solid black; }
+        circle { fill: steelblue; stroke: black; stroke-width: 1; }
+        text { font-size: 10px; }
+    </style>
+</head>
+<body>
+    <svg width="600" height="600">
+        <!-- Assuming we manually scale our x values from 2010-2024 and y values from 0 to ~550 -->
+        <!-- This scaling and positioning logic will be simplified for demonstration -->
+        <!-- X-axis -->
+        <line x1="50" y1="550" x2="550" y2="550" stroke="black"></line>
+        <!-- Y-axis -->
+        <line x1="50" y1="50" x2="50" y2="550" stroke="black"></line>
+        <!-- Labels and markers for the X axis -->
+        <text x="45" y="570" text-anchor="end">2010</text>
+        <text x="545" y="570" text-anchor="end">2024</text>
+        <!-- Labels and markers for the Y axis -->
+        <text x="40" y="55" text-anchor="end">550</text>
+        <text x="40" y="550" text-anchor="end">0</text>
+        
+        <!-- Data Points -->
+        <!-- Adjust the cx, cy values based on a simple scale -->
+        <!-- Note: This is a simplified approach and might require adjustment for precise scaling -->
+        ${dataPoints.map(point => {
+            const x = ((point.x - 2010) / (2024 - 2010)) * 500 + 50; // Map year to pixel
+            const y = 550 - (point.y / 550) * 500; // Map value to pixel, inverting y
+            return `<circle cx="${x}" cy="${y}" r="5"></circle>`;
+        }).join('')}
+    </svg>
+</body>
+</html>
