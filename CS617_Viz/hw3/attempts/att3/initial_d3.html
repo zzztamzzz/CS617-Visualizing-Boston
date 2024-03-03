@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rainfall Visualization</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        /* Add some basic styling */
+        svg {
+            font-family: Arial, sans-serif;
+            /* background-color: #f9f9f9; */
+            background-color: whitesmoke;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+        .axis-label {
+            font-size: 15px;
+            font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <svg width="800" height="600" viewBox="0 0 800 600">
+        <!-- Define the polyline for the chart. Update the points attribute with your data -->
+        <polyline fill="none" stroke="blue" stroke-width="2"
+                  points=""/>
+
+        <!-- Add labels for the axes -->
+        <text x="400" y="590" class="axis-label" text-anchor="middle">Year</text>
+        <text x="10" y="300" class="axis-label" transform="rotate(-90 10,300)" text-anchor="middle">Rainfall</text>
+    </svg>
+
+    <script>
+        // If you want to dynamically add data using D3, you can do so here
+        // For example, if your data is in an array of {year, rainfall} objects
+        var rainfallData = [
+            // { year: 2010, rainfall: 200 },
+            // Add your data points here
+            {year: 2010, rainfall: 7.45},
+            {year: 2011, rainfall: 477.78},
+            {year: 2012, rainfall: 316.47},
+            {year: 2013, rainfall: 315.48},
+            {year: 2014, rainfall: 349.87},
+            {year: 2015, rainfall: 188.96},
+            {year: 2016, rainfall: 242.4},
+            {year: 2017, rainfall: 317.81},
+            {year: 2018, rainfall: 521.02},
+            {year: 2019, rainfall: 417.92},
+            {year: 2020, rainfall: 346.89},
+            {year: 2021, rainfall: 352.64},
+            {year: 2022, rainfall: 239.5},
+            {year: 2023, rainfall: 534.89}
+        ];
+
+        // Convert data points to SVG polyline points string
+        var linePoints = rainfallData.map(function(d, i) {
+            var x = (d.year - 2010) * 50; // Stretch horizontally
+            var y = 600 - d.rainfall; // Example y calculation, adjust as necessary
+            return x + "," + y;
+        }).join(" ");
+
+        // Set the points attribute for the polyline
+        d3.select("polyline").attr("points", linePoints);
+    </script>
+</body>
+</html>

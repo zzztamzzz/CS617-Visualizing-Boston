@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced SVG Line Chart</title>
+    <style>
+        .data-container {
+            display: none;
+        }
+        .svg-container {
+            width: 100%;
+            height: auto;
+            border: 1px solid #ccc; /* Just to see the boundaries */
+        }
+        /* Tooltip styling */
+        .tooltip {
+            position: absolute;
+            background-color: black;
+            color: white;
+            padding: 4px;
+            border-radius: 4px;
+            visibility: hidden;
+        }
+        /* Animation for drawing the line */
+        .draw-line {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw 5s forwards;
+        }
+        @keyframes draw {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+        .axis {
+    stroke: black;
+    stroke-width: 2;
+}
+
+.axis-label {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+.tick {
+    stroke: black;
+    stroke-width: 1;
+}
+    </style>
+</head>
+<body>
+
+<svg class="svg-container" id="lineChart" width="1000" height="500" xmlns="http://www.w3.org/2000/svg">
+    <!-- Line chart will be generated here -->
+</svg>
+
+<div class="tooltip" id="tooltip"></div>
+
+<!-- Data -->
+<div class="data-container" id="chartData">
+        <div data-point="2010,7.45"></div>
+        <div data-point="2011,477.78"></div>
+        <div data-point="2012,316.47"></div>
+        <div data-point="2013, 315.48"></div>
+        <div data-point="2014,349.87"></div>
+        <div data-point="2015,188.96"></div>
+        <div data-point="2016,242.4"></div>
+        <div data-point="2017,317.81"></div>
+        <div data-point="2018,521.02"></div>
+        <div data-point="2019,417.92"></div>
+        <div data-point="2020,346.89"></div>
+        <div data-point="2021,352.64"></div>
+        <div data-point="2022,239.5"></div>
+        <div data-point="2023,534.89"></div>
+</div>
+<script>
+    window.onload = function() {
+        const dataPoints = document.querySelectorAll('#chartData [data-point]');
+        const svgNS = "http://www.w3.org/2000/svg";
+        let points = "";
+        const svgContainer = document.getElementById('lineChart');
+
+// Draw Y-axis
+const yAxis = document.createElementNS(svgNS, "line");
+    yAxis.setAttribute("x1", "40");
+    yAxis.setAttribute("y1", "0");
+    yAxis.setAttribute("x2", "40");
+    yAxis.setAttribute("y2", "500");
+    yAxis.setAttribute("class", "axis");
+    svgContainer.appendChild(yAxis);
+
+    // Draw X-axis
+    const xAxis = document.createElementNS(svgNS, "line");
+    xAxis.setAttribute("x1", "40");
+    xAxis.setAttribute("y1", "500");
+    xAxis.setAttribute("x2", "1000");
+    xAxis.setAttribute("y2", "500");
+    xAxis.setAttribute("class", "axis");
+    svgContainer.appendChild(xAxis);
+
+    // Y-axis label
+    const yAxisLabel = document.createElementNS(svgNS, "text");
+    yAxisLabel.setAttribute("x", "0");
+    yAxisLabel.setAttribute("y", "15");
+    yAxisLabel.setAttribute("transform", "rotate(-90 20,20)");
+    yAxisLabel.setAttribute("class", "axis-label");
+    yAxisLabel.textContent = "Measured Rainfall (inches)";
+    svgContainer.appendChild(yAxisLabel);
+
+    // X-axis label
+    const xAxisLabel = document.createElementNS(svgNS, "text");
+    xAxisLabel.setAttribute("x", "500");
+    xAxisLabel.setAttribute("y", "540");
+    xAxisLabel.setAttribute("class", "axis-label");
+    xAxisLabel.textContent = "Years";
+    svgContainer.appendChild(xAxisLabel);
+
+        dataPoints.forEach((elem, index) => {
+            const [x, y] = elem.getAttribute('data-point').split(',').map(Number);
+            const scaledX = (x - 2010) * 80; // Adjust scale for x
+            const scaledY = 500 - (y / 1.5); // Adjust scale for y
+            points += `${scaledX},${scaledY} `;
+        });
+
+        const polyline = document.createElementNS(svgNS, "polyline");
+        polyline.setAttribute("points", points.trim());
+        polyline.setAttribute("stroke", "blue");
+        polyline.setAttribute("stroke-width", "2");
+        polyline.setAttribute("fill", "none");
+        document.getElementById('lineChart').appendChild(polyline);
+
+        // Calculate the total length of the polyline
+        const totalLength = polyline.getTotalLength();
+
+        // Set the stroke-dasharray and stroke-dashoffset to the total length for animation
+        polyline.style.strokeDasharray = totalLength;
+        polyline.style.strokeDashoffset = totalLength;
+        polyline.setAttribute("class", "draw-line");
+
+        // Initiate the animation by gradually reducing the stroke-dashoffset to 0
+        polyline.getBoundingClientRect(); // Trigger a reflow in between setting dashoffsets
+        polyline.style.animation = "draw 5s forwards";
+
+        dataPoints.forEach((elem, index) => {
+            const [x, y] = elem.getAttribute('data-point').split(',').map(Number);
+            const scaledX = (x - 2010) * 80; // Adjust scale for x
+            const scaledY = 500 - (y / 1.5); // Adjust scale for y
+
+            // Dots for each data point
+            const circle = document.createElementNS(svgNS, "circle");
+            circle.setAttribute("cx", scaledX);
+            circle.setAttribute("cy", scaledY);
+            circle.setAttribute("r", 5);
+            circle.setAttribute("fill", "red");
+            circle.addEventListener('mouseover', () => showTooltip(elem.getAttribute('data-point'), scaledX, scaledY));
+            circle.addEventListener('mouseout', hideTooltip);
+            document.getElementById('lineChart').appendChild(circle);
+        });
+    };
+
+    function showTooltip(data, x, y) {
+        const tooltip = document.getElementById('tooltip');
+        tooltip.textContent = `Value: ${data}`;
+        tooltip.style.left = `${x + 20}px`;
+        tooltip.style.top = `${y}px`;
+        tooltip.style.visibility = 'visible';
+    }
+
+    function hideTooltip() {
+        const tooltip = document.getElementById('tooltip');
+        tooltip.style.visibility = 'hidden';
+    }
+</script>
+</body>
+</html>
