@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Organized Boxes Layout</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+        svg {
+            width: 80vw; /* Adjusted to match the .container width */
+            height: 400px; /* Adjusted to match the large box height */
+            display: block; /* To center the SVG like the .container */
+        }
+        .large-box, .box {
+            fill: none;
+            stroke: black;
+        }
+        .large-box {
+            fill: #007bff; /* Large box background color */
+        }
+        .box {
+            fill: #17a2b8; /* Small boxes background color */
+        }
+        text {
+            fill: white;
+            font-family: Arial, sans-serif;
+            text-anchor: middle;
+            alignment-baseline: central;
+        }
+    </style>
+</head>
+<body>
+    <svg viewBox="0 0 800 400">
+        <!-- Large box -->
+        <rect class="large-box" x="10" y="10" width="320" height="380"/>
+        <text x="170" y="200" font-size="24">Large Box</text>
+        
+        <!-- Small boxes -->
+        <!-- Adjust the x, y positions according to your layout requirements -->
+        <g class="small-boxes">
+            <!-- Each box with its position and text -->
+            <!-- You can calculate the x, y positions based on the size and gap between boxes -->
+            <rect class="box" x="340" y="10" width="105" height="90"/>
+            <text x="392.5" y="55" font-size="14">1</text>
+
+            <!-- Repeat for other boxes -->
+            <!-- Example for the second box, adjust x value for positioning -->
+            <rect class="box" x="455" y="10" width="105" height="90"/>
+            <text x="507.5" y="55" font-size="14">2</text>
+
+            <!-- Add more boxes as needed, adjusting the x and y for each -->
+        </g>
+    </svg>
+</body>
+</html>

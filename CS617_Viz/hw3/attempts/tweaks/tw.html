@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D3 Rain in Boston</title>
+    <style>
+        body {
+            display: flex;
+            justify-content:center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #e9eff9 0%, #eff2f9 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        svg {
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background-color: whitesmoke;
+        }
+        text {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            text-shadow: 1px 1px #ffffff;
+        }
+        .circle {
+            transition: fill 0.3s, r 0.2s;
+        }
+        .circle:hover {
+            fill: orange;
+            r: 8;
+        }
+        .line-chart-path {
+            stroke-dasharray: 2000;
+            stroke-dashoffset: 2000;
+            animation: draw 2s forwards;
+        }
+        @keyframes draw {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h2 style="position: absolute; top: 0; width: 100%; text-align: center;">Rain in Boston</h2>
+    <svg width="700" height="700"></svg>
+    <p style="position: absolute; bottom: 0; width: 100%; text-align: center;">Rainfall over the years</p>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        var svg = d3.select("svg"),
+            margin = {top: 20, right: 20, bottom: 30, left: 40},
+            width = +svg.attr("width") - margin.left - margin.right,
+            height = +svg.attr("height") - margin.top - margin.bottom;
+
+        var x = d3.scaleLinear().range([0, width]),
+            y = d3.scaleLinear().range([height, 0]);
+
+        var line = d3.line()
+            .x(function(d) { return x(d.year); })
+            .y(function(d) { return y(d.value); });
+
+        var g = svg.append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        var data = [
+            {year: 2010, value: 7.45},
+            {year: 2011, value: 477.78},
+            {year: 2012, value: 316.47},
+            // Add the rest of your data points here
+        ];
+
+        x.domain(d3.extent(data, function(d) { return d.year; }));
+        y.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+        // Add the line
+        g.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", "blue")
+            .attr("stroke-width", 2)
+            .attr("class", "line-chart-path")
+            .attr("d", line);
+
+        // Add the dots
+        g.selectAll(".dot")
+            .data(data)
+            .enter().append("circle")
+            .attr("class", "circle")
+            .attr("cx", function(d) { return x(d.year); })
+            .attr("cy", function(d) { return y(d.value); })
+            .attr("r", 4)
+            .attr("fill", "red")
+            .append("title")
+            .text(function(d) { return '(' + d.year + ', ' + d.value + ')'; });
+
+        // Optionally, add axes and other SVG elements as needed.
+    </script>
+</body>
+</html>

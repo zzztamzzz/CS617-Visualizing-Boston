@@ -1,35 +1,35 @@
 Adjusted by 20px
-20.00, 620.00
-62.86, 84.97
-105.71, 268.47
-148.57, 269.59
-191.43, 230.47
-234.29, 413.52
-277.14, 352.73
-320.00, 266.94
-362.86, 35.78
-405.71, 153.06
-448.57, 233.86
-491.43, 227.32
-534.29, 356.03
-577.14, 20.00
-620.00, 488.04
+20.00, 520.00
+55.71, 74.14
+91.43, 227.06
+127.14, 228.00
+162.86, 195.39
+198.57, 347.93
+234.29, 297.27
+270.00, 225.79
+305.71, 33.15
+341.43, 130.88
+377.14, 198.22
+412.86, 192.77
+448.57, 300.02
+484.29, 20.00
+520.00, 410.03
 
 
 
 satisfy the lazy
-<circle cx="20.00" cy="620.00" r="4" fill="red" />
-<circle cx="62.86" cy="84.97" r="4" fill="red" />
-<circle cx="105.71" cy="268.47" r="4" fill="red" />
-<circle cx="148.57" cy="269.59" r="4" fill="red" />
-<circle cx="191.43" cy="230.47" r="4" fill="red" />
-<circle cx="234.29" cy="413.52" r="4" fill="red" />
-<circle cx="277.14" cy="352.73" r="4" fill="red" />
-<circle cx="320.00" cy="266.94" r="4" fill="red" />
-<circle cx="362.86" cy="35.78" r="4" fill="red" />
-<circle cx="405.71" cy="153.06" r="4" fill="red" />
-<circle cx="448.57" cy="233.86" r="4" fill="red" />
-<circle cx="491.43" cy="227.32" r="4" fill="red" />
-<circle cx="534.29" cy="356.03" r="4" fill="red" />
-<circle cx="577.14" cy="20.00" r="4" fill="red" />
-<circle cx="620.00" cy="488.04" r="4" fill="red" />
+<circle cx="20.00" cy="520.00" r="4" fill="red" />
+<circle cx="55.71" cy="74.14" r="4" fill="red" />
+<circle cx="91.43" cy="227.06" r="4" fill="red" />
+<circle cx="127.14" cy="228.00" r="4" fill="red" />
+<circle cx="162.86" cy="195.39" r="4" fill="red" />
+<circle cx="198.57" cy="347.93" r="4" fill="red" />
+<circle cx="234.29" cy="297.27" r="4" fill="red" />
+<circle cx="270.00" cy="225.79" r="4" fill="red" />
+<circle cx="305.71" cy="33.15" r="4" fill="red" />
+<circle cx="341.43" cy="130.88" r="4" fill="red" />
+<circle cx="377.14" cy="198.22" r="4" fill="red" />
+<circle cx="412.86" cy="192.77" r="4" fill="red" />
+<circle cx="448.57" cy="300.02" r="4" fill="red" />
+<circle cx="484.29" cy="20.00" r="4" fill="red" />
+<circle cx="520.00" cy="410.03" r="4" fill="red" />

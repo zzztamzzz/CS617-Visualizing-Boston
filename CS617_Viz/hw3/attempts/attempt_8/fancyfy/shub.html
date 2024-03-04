@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SVG Line Chart Example</title>
+    <title>Let it rain</title>
     <style>
         body {
             display: flex;
@@ -11,18 +11,46 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: white;
+            background: linear-gradient(135deg, #e9eff9 0%, #eff2f9 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        svg {
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         text {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            text-shadow: 1px 1px #ffffff;
+        }
+        .line-chart-path {
+            stroke-dasharray: 2000;
+            stroke-dashoffset: 2000;
+            animation: draw 2s forwards;
+        }
+        @keyframes draw {
+            to {
+                stroke-dashoffset: 0;
+            }
         }
     </style>
+    <script>
+        window.onload = function() {
+            var polyline = document.querySelector('.line-chart-path');
+            var length = polyline.getTotalLength();
+
+            polyline.style.strokeDasharray = length;
+            polyline.style.strokeDashoffset = length;
+
+            polyline.getBoundingClientRect();
+            polyline.style.animation = 'draw 2s forwards';
+        };
+    </script>
 </head>
 <body>
     <h2 style="position: absolute; top: 0; width: 100%; text-align: center;">SVG Line Chart Example</h2>
     <svg width="700" height="700" style="background-color: whitesmoke;">
-        <!-- Polyline and dots unchanged, keeping your polyline and circles here -->
         <polyline
+            class="line-chart-path"
             fill="none"
             stroke="blue"
             stroke-width="2"
@@ -45,7 +73,7 @@
             "
         />
         <!-- The dots -->
-        <circle cx="20.00" cy="620.00" r="4" fill="red" />
+        <circle cx="20.00" cy="620.00" r="4" fill="red"/>
         <circle cx="62.86" cy="84.97" r="4" fill="red" />
         <circle cx="105.71" cy="268.47" r="4" fill="red" />
         <circle cx="148.57" cy="269.59" r="4" fill="red" />
@@ -60,19 +88,13 @@
         <circle cx="534.29" cy="356.03" r="4" fill="red" />
         <circle cx="577.14" cy="20.00" r="4" fill="red" />
         <circle cx="620.00" cy="488.04" r="4" fill="red" />
-        <!-- Adjusted axes with line-based arrowheads -->
+        <!-- Axes and labels unchanged -->
         <line x1="10" y1="650" x2="640" y2="650" stroke="black" stroke-width="2" />
         <line x1="10" y1="650" x2="10" y2="20" stroke="black" stroke-width="2" />
-
-        <!-- Arrowheads with lines -->
-        <!-- X-axis arrow -->
         <line x1="640" y1="650" x2="630" y2="640" stroke="black" stroke-width="2" />
         <line x1="640" y1="650" x2="630" y2="660" stroke="black" stroke-width="2" />
-        <!-- Y-axis arrow -->
         <line x1="10" y1="20" x2="0" y2="30" stroke="black" stroke-width="2" />
         <line x1="10" y1="20" x2="20" y2="30" stroke="black" stroke-width="2" />
-
-        <!-- Axis labels adjusted to avoid overlapping with arrowheads -->
         <text x="650" y="670" font-size="15" fill="black">Years</text>
         <text x="0" y="15" font-size="15" fill="black" transform="rotate(0 25,15)">Measured Rainfall (inches)</text>
     </svg>
