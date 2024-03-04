@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Line Chart Example</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <h2 style="position: absolute; top: 0; width: 100%; text-align: center;">SVG Line Chart Example</h2>
+    <!-- Container slightly bigger than plot points to eliminate cutout circles -->
+    <svg width="700" height="700">
+        <!-- Adjusted polyline to fit within the new dimensions -->
+        <polyline
+            fill="none"
+            stroke="blue"
+            stroke-width="2"
+            points="
+            20.00, 620.00
+            62.86, 84.97
+            105.71, 268.47
+            148.57, 269.59
+            191.43, 230.47
+            234.29, 413.52
+            277.14, 352.73
+            320.00, 266.94
+            362.86, 35.78
+            405.71, 153.06
+            448.57, 233.86
+            491.43, 227.32
+            534.29, 356.03
+            577.14, 20.00
+            620.00, 488.04
+            "
+        />
+        <!-- The dots -->
+        <circle cx="20.00" cy="620.00" r="4" fill="red" />
+        <circle cx="62.86" cy="84.97" r="4" fill="red" />
+        <circle cx="105.71" cy="268.47" r="4" fill="red" />
+        <circle cx="148.57" cy="269.59" r="4" fill="red" />
+        <circle cx="191.43" cy="230.47" r="4" fill="red" />
+        <circle cx="234.29" cy="413.52" r="4" fill="red" />
+        <circle cx="277.14" cy="352.73" r="4" fill="red" />
+        <circle cx="320.00" cy="266.94" r="4" fill="red" />
+        <circle cx="362.86" cy="35.78" r="4" fill="red" />
+        <circle cx="405.71" cy="153.06" r="4" fill="red" />
+        <circle cx="448.57" cy="233.86" r="4" fill="red" />
+        <circle cx="491.43" cy="227.32" r="4" fill="red" />
+        <circle cx="534.29" cy="356.03" r="4" fill="red" />
+        <circle cx="577.14" cy="20.00" r="4" fill="red" />
+        <circle cx="620.00" cy="488.04" r="4" fill="red" />
+
+        <!-- Add the rest of the circles with adjusted positions -->
+
+        <!-- Adjusted axes -->
+        <line x1="20" y1="650" x2="650" y2="650" stroke="black" stroke-width="2" />
+        <line x1="20" y1="20" x2="20" y2="620" stroke="black" stroke-width="2" />
+    </svg>
+    <p style="position: absolute; bottom: 0; width: 100%; text-align: center;">This SVG line chart visualizes data points from 2010 to 2024.</p>
+</body>
+</html>

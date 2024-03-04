@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Line Chart Visualization</title>
+<style>
+  .point:hover {
+    fill: red;
+  }
+  path {
+    stroke: black;
+    fill: none;
+  }
+  text {
+    font-size: 12px;
+    text-anchor: middle;
+  }
+</style>
+</head>
+<body>
+
+<svg width="1000" height="1000">
+  <!-- Path for the line chart -->
+  <path d="M50.0,395.82 L85.71,132.03 L121.43,222.50 L157.14,223.06 L192.86,203.77 L228.57,294.02 L264.29,264.05 L300.0,221.75 L335.71,107.78 L371.43,165.60 L407.14,205.44 L442.86,202.22 L478.57,265.67 L514.29,100.0 L550.0,330.76" stroke="teal" fill="none"></path>
+
+  <!-- Circles for data points -->
+  <circle cx="50" cy="395.82" r="5" fill="orange" class="point"></circle>
+  <circle cx="85.71" cy="132.03" r="5" fill="orange" class="point"></circle>
+  <circle cx="121.43" cy="222.50" r="5" fill="orange" class="point"></circle>
+  <circle cx="157.14" cy="223.06" r="5" fill="orange" class="point"></circle>
+  <circle cx="192.86" cy="203.77" r="5" fill="orange" class="point"></circle>
+  <circle cx="228.57" cy="294.02" r="5" fill="orange" class="point"></circle>
+  <circle cx="264.29" cy="264.05" r="5" fill="orange" class="point"></circle>
+  <circle cx="300" cy="221.75" r="5" fill="orange" class="point"></circle>
+  <circle cx="335.71" cy="107.78" r="5" fill="orange" class="point"></circle>
+  <circle cx="371.43" cy="165.60" r="5" fill="orange" class="point"></circle>
+  <circle cx="407.14" cy="205.44" r="5" fill="orange" class="point"></circle>
+  <circle cx="442.86" cy="202.22" r="5" fill="orange" class="point"></circle>
+  <circle cx="478.57" cy="265.67" r="5" fill="orange" class="point"></circle>
+  <circle cx="514.29" cy="100" r="5" fill="orange" class="point"></circle>
+  <circle cx="550" cy="330.76" r="5" fill="orange" class="point"></circle>
+
+  <!-- Labels for each point (year) -->
+  <text x="50" y="415">2010</text>
+  <text x="85.71" y="147">2011</text>
+  <text x="121.43" y="237.50">2012</text>
+  <text x="157.14" y="238.06">2013</text>
+  <text x="192.86" y="218.77">2014</text>
+  <text x="228.57" y="309.02">2015</text>
+  <text x="264.29" y="279.05">2016</text>
+  <text x="300" y="236.75">2017</text>
+  <text x="335.71" y="122.78">2018</text>
+  <text x="371.43" y="180.60">2019</text>
+  <text x="407.14" y="220.44">2020</text>
+  <text x="442.86" y="217.22">2021</text>
+  <text x="478.57" y="280.67">2022</text>
+  <text x="514.29" y="115">2023</text>
+  <text x="550" y="345.76">2024</text>
+</svg>
