@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<div id="container"></div>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script type="module">
+
+    // Declare the chart dimensions and margins.
+    const width = 640;
+    const height = 400;
+    const SLEEPMS = 0;
+
+    function getRandomInt(max) {
+        return Math.floor(Math.random() * max);
+    }
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Create the SVG container.
+    const svg = d3.create("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    // Append the SVG element.
+    container.append(svg.node());
+
+    let a = Date.now();
+    async function stuff() {
+        for (let i = 0; i < 100; i++) {
+
+            let randX = getRandomInt(width);
+            let randY = getRandomInt(height);
+            let randRadius = getRandomInt(40) + 10;
+            svg.append("path")
+                .attr("transform", `translate(${randX},${randY})`)
+                .style("stroke", "black")
+                .style("fill", "yellow") 
+                .attr("d", d3.arc()({
+                    outerRadius: randRadius,
+                    startAngle: -Math.PI,
+                    endAngle: Math.PI
+                }));
+
+            await sleep(SLEEPMS)
+        }
+    }
+
+    await stuff()
+
+    let b = Date.now();
+
+    console.log(`Program ran in: ${b - a} ms`);
+
+</script>
