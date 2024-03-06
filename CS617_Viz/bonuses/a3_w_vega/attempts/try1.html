@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D3 Rain in Boston</title>
+    <style>
+        body {
+            display: flex;
+            justify-content:center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #e9eff9 0%, #eff2f9 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        svg {
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background-color: whitesmoke;
+        }
+        text {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            text-shadow: 1px 1px #ffffff;
+        }
+        .circle {
+            transition: fill 0.3s, r 0.2s;
+        }
+        .circle:hover {
+            fill: orange;
+            r: 8;
+        }
+        .line-chart-path {
+            animation: draw 2s forwards;
+        }
+        @keyframes draw {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h2 style="position: absolute; top: 0; width: 100%; text-align: center;">Rain in Boston</h2>
+    <svg width="700" height="700"></svg>
+    <p style="position: absolute; bottom: 0; width: 100%; text-align: center;">Rainfall over the years. </p>
+    <script>
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "description": "Rain in Boston over the years.",
+    "width": 700,
+    "height": 500,
+    "data": {
+      "values": [
+        {"year": 2010, "value": 7.45},
+        {"year": 2011, "value": 477.78},
+        {"year": 2012, "value": 316.47},
+        {"year": 2013, "value": 315.48},
+        {"year": 2014, "value": 349.87},
+        {"year": 2015, "value": 188.96},
+        {"year": 2016, "value": 242.4},
+        {"year": 2017, "value": 317.81},
+        {"year": 2018, "value": 521.02},
+        {"year": 2019, "value": 417.92},
+        {"year": 2020, "value": 346.89},
+        {"year": 2021, "value": 352.64},
+        {"year": 2022, "value": 239.5},
+        {"year": 2023, "value": 534.89},
+        {"year": 2024, "value": 101.37}
+      ]
+    },
+    "mark": "line",
+    "encoding": {
+      "x": {
+        "field": "year",
+        "type": "quantitative",
+        "axis": {"title": "Years"}
+      },
+      "y": {
+        "field": "value",
+        "type": "quantitative",
+        "axis": {"title": "Rainfall (inches)"}
+      },
+      "color": {"value": "blue"}
+    },
+    "layer": [
+      {
+        "mark": "line",
+        "encoding": {
+          "tooltip": [
+            {"field": "year", "type": "quantitative"},
+            {"field": "value", "type": "quantitative"}
+          ]
+        }
+      },
+      {
+        "mark": {
+          "type": "point",
+          "filled": true,
+          "color": "red"
+        },
+        "encoding": {
+          "x": {"field": "year", "type": "quantitative"},
+          "y": {"field": "value", "type": "quantitative"},
+          "size": {"value": 100}
+        }
+      }
+    ]
+  }
+</script>
+</body>
+</html>
