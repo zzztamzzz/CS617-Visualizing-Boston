@@ -32,7 +32,7 @@ enum TokenKind {
 
     // Added for Proj2 P2. Make sure no duplicate operators are present
     QUESTION_MARK("?"), COLON(":"), NOT_EQUALS("!="),
-    DIVIDE_ASSIGN("/="), DECREMENT("-="), PROD_ASSIGN("*="),
+    DIVIDE_ASSIGN("/="), SUBTRACTION_ASSIGN("-="), PROD_ASSIGN("*="),
     MOD_ASSIGN("%="), ARSHIFT_ASSIGN(">>="), LOGRSHIFT_ASSIGN(">>>="),
     ALSHIFT_ASSIGN("<<="), COMPARE_LESS("<"), XOR_ASSIGN("^="),
     OR_ASSIGN("|="), LOR("||"), AND_ASSIGN("&="), GREAT_EQUAL(">="),

@@ -104,13 +104,18 @@ public class Parser {
      * Parses a type declaration and returns an AST for it.
      *
      * <pre>
-     *   typeDeclaration ::= modifiers classDeclaration
+     *   typeDeclaration ::= modifiers ( classDeclaration | interfacDecleration)
+     *
      * </pre>
      *
      * @return an AST for a type declaration.
      */
     private JAST typeDeclaration() {
         ArrayList<String> mods = modifiers();
+        // Added Proj3 P10
+        if (see(INTERFACE)){
+            return interfaceDeclaration(mods);
+        }
         return classDeclaration(mods);
     }
 
@@ -205,9 +210,42 @@ public class Parser {
         } else {
             superClass = Type.OBJECT;
         }
-        return new JClassDeclaration(line, mods, name, superClass, null, classBody());
+        ArrayList<TypeName> superInterfaces = null;
+        if (have(IMPLEMENTS)) {
+            superInterfaces = new ArrayList<TypeName>();
+            do {
+                superInterfaces.add(qualifiedIdentifier());
+            } while (have(COMMA));
+        }
+        return new JClassDeclaration(line, mods, name, superClass, superInterfaces, classBody());
     }
 
+    /**
+     * Parses an interface declaration and returns an AST for it.
+     *
+     * <pre>
+     *   interfaceDeclaration ::= INTERFACE IDENTIFIER
+     *                                [ EXTENDS qualifiedIdentifier { COMMA qualifiedIdentifier } ]
+     *                                    interfaceBody
+     * </pre>
+     *
+     * @param mods the interface modifiers
+     * @return an AST for an interface declaration.
+     */
+    private JInterfaceDeclaration interfaceDeclaration(ArrayList<String> mods) {
+        int line = scanner.token().line();
+        mustBe(INTERFACE);
+        mustBe(IDENTIFIER);
+        String name = scanner.previousToken().image();
+        ArrayList<TypeName> superInterfaces = null;
+        if (have(EXTENDS)) {
+            superInterfaces = new ArrayList<TypeName>();
+            do {
+                superInterfaces.add(qualifiedIdentifier());
+            } while (have(COMMA));
+        }
+        return new JInterfaceDeclaration(line, mods, name, superInterfaces, interfaceBody());
+    }
     /**
      * Parses a class body and returns a list of members in the body.
      *
@@ -229,11 +267,32 @@ public class Parser {
     }
 
     /**
+     * Parses an interface body and returns a list of members in the body.
+     *
+     * <pre>
+     *   interfaceBody ::= LCURLY { modifiers interfaceMemberDecl } RCURLY
+     * </pre>
+     *
+     * @return list of members in the interface body.
+     */
+    private ArrayList<JMember> interfaceBody() {
+        ArrayList<JMember> members = new ArrayList<JMember>();
+        mustBe(LCURLY);
+        while (!see(RCURLY) && !see(EOF)) {
+            members.add(interfaceMemberDecl(modifiers()));
+        }
+        mustBe(RCURLY);
+        return members;
+    }
+    /**
      * Parses a member declaration and returns an AST for it.
      *
      * <pre>
-     *   memberDecl ::= IDENTIFIER formalParameters block
-     *                | ( VOID | type ) IDENTIFIER formalParameters ( block | SEMI )
+     *   memberDecl ::= IDENTIFIER formalParameters
+     *                      [ THROWS qualifiedIdentifier { COMMA qualifiedIdentifier } ] block
+     *                | ( VOID | type ) IDENTIFIER formalParameters
+     *                      [ THROWS qualifiedIdentifier { COMMA qualifiedIdentifier } ]
+     *                          ( block | SEMI )
      *                | type variableDeclarators SEMI
      * </pre>
      *
@@ -248,8 +307,16 @@ public class Parser {
             mustBe(IDENTIFIER);
             String name = scanner.previousToken().image();
             ArrayList<JFormalParameter> params = formalParameters();
+            ArrayList<TypeName> exceptions = null;
+            // Added Proj3 P9
+            if (have(THROWS)) {
+                exceptions = new ArrayList<TypeName>();
+                do {
+                    exceptions.add(qualifiedIdentifier());
+                } while (have(COMMA));
+            }
             JBlock body = block();
-            memberDecl = new JConstructorDeclaration(line, mods, name, params, null, body);
+            memberDecl = new JConstructorDeclaration(line, mods, name, params, exceptions, body);
         } else {
             Type type = null;
             if (have(VOID)) {
@@ -258,8 +325,17 @@ public class Parser {
                 mustBe(IDENTIFIER);
                 String name = scanner.previousToken().image();
                 ArrayList<JFormalParameter> params = formalParameters();
+                // Added Proj3 P9
+                ArrayList<TypeName> exceptions = null;
+                if (have(THROWS)) {
+                    exceptions = new ArrayList<TypeName>();
+                    do {
+                        exceptions.add(qualifiedIdentifier());
+                    } while (have(COMMA));
+                }
                 JBlock body = have(SEMI) ? null : block();
-                memberDecl = new JMethodDeclaration(line, mods, name, type, params, null, body);
+                memberDecl = new JMethodDeclaration(line, mods, name, type, params, exceptions,
+                        body);
             } else {
                 type = type();
                 if (seeIdentLParen()) {
@@ -267,8 +343,17 @@ public class Parser {
                     mustBe(IDENTIFIER);
                     String name = scanner.previousToken().image();
                     ArrayList<JFormalParameter> params = formalParameters();
+                    // Added Proj3 P9
+                    ArrayList<TypeName> exceptions = null;
+                    if (have(THROWS)) {
+                        exceptions = new ArrayList<TypeName>();
+                        do {
+                            exceptions.add(qualifiedIdentifier());
+                        } while (have(COMMA));
+                    }
                     JBlock body = have(SEMI) ? null : block();
-                    memberDecl = new JMethodDeclaration(line, mods, name, type, params, null, body);
+                    memberDecl = new JMethodDeclaration(line, mods, name, type, params, exceptions,
+                            body);
                 } else {
                     // A field.
                     memberDecl = new JFieldDeclaration(line, mods, variableDeclarators(type));
@@ -277,6 +362,80 @@ public class Parser {
             }
         }
         return memberDecl;
+    }
+    /**
+     * Parses an interface member declaration and return an AST for it.
+     *
+     * <pre>
+     *   interfaceMemberDecl ::= ( VOID | type ) IDENTIFIER formalParameters
+     *                             [ THROWS qualifiedIdentifier { COMMA qualifiedIdentifier } ] SEMI
+     *                         | type variableDeclarators SEMI
+     * </pre>
+     *
+     * @param mods the interface member modifiers.
+     * @return an AST for an interface member declaration.
+     */
+    private JMember interfaceMemberDecl(ArrayList<String> mods) {
+        int line = scanner.token().line();
+        JMember member = null;
+        if (have(CLASS)) {
+            reportParserError("No inner classes right now.");
+        } else if (have(INTERFACE)) {
+            reportParserError("No inner interfaces right now.");
+        } else {
+            Type type = null;
+            if (have(VOID)) {
+                // void method
+                if (!mods.contains("abstract")) {
+                    mods.add("abstract");
+                }
+                if (!mods.contains("public")) {
+                    mods.add("public");
+                }
+                type = Type.VOID;
+                mustBe(IDENTIFIER);
+                String name = scanner.previousToken().image();
+                ArrayList<JFormalParameter> params = formalParameters();
+                ArrayList<TypeName> exceptions = null;
+                if (have(THROWS)) {
+                    exceptions = new ArrayList<TypeName>();
+                    do {
+                        exceptions.add(qualifiedIdentifier());
+                    } while (have(COMMA));
+                }
+                mustBe(SEMI);
+                member = new JMethodDeclaration(line, mods, name, type, params, exceptions, null);
+            } else {
+                type = type();
+                if (seeIdentLParen()) {
+                    // Non void method
+                    if (!mods.contains("abstract")) {
+                        mods.add("abstract");
+                    }
+                    if (!mods.contains("public")) {
+                        mods.add("public");
+                    }
+                    mustBe(IDENTIFIER);
+                    String name = scanner.previousToken().image();
+                    ArrayList<JFormalParameter> params = formalParameters();
+                    ArrayList<TypeName> exceptions = null;
+                    if (have(THROWS)) {
+                        exceptions = new ArrayList<TypeName>();
+                        do {
+                            exceptions.add(qualifiedIdentifier());
+                        } while (have(COMMA));
+                    }
+                    mustBe(SEMI);
+                    member = new JMethodDeclaration(line, mods, name, type, params, exceptions,
+                            null);
+                } else {
+                    // Field
+                    member = new JFieldDeclaration(line, mods, variableDeclarators(type));
+                    mustBe(SEMI);
+                }
+            }
+        }
+        return member;
     }
 
     /**
@@ -327,6 +486,12 @@ public class Parser {
      *               | SEMI
      *               | WHILE parExpression statement
      *               | statementExpression SEMI
+     *               | DO statement
+     *               | BREAK SEMI
+     *               | CONTINUE SEMI
+     *               | SWITCH parExpression LCURLY { switchBlockStatementGroup } RCURLY
+     *               | TRY block { CATCH LPAREN formalParameter RPAREN block } [ FINALLY block ]
+     *
      * </pre>
      *
      * @return an AST for a statement.
@@ -354,14 +519,137 @@ public class Parser {
             JExpression test = parExpression();
             JStatement statement = statement();
             return new JWhileStatement(line, test, statement);
-        } else {
+        }
+        // Added Proj3 P4
+        else if (have(DO)) {
+            JStatement statement = statement();
+            mustBe(WHILE);
+            JExpression test = parExpression();
+            mustBe(SEMI);
+            return new JDoStatement(line, statement, test);
+        }
+        // Added Proj3 P6
+        else if (have(BREAK)) {
+            mustBe(SEMI);
+            return new JBreakStatement(line);
+        }
+        // Added Proj3 P7
+        else if (have(CONTINUE)) {
+            mustBe(SEMI);
+            return new JContinueStatement(line);
+        }
+        // Added Proj3 P5, for
+        else if (have(FOR)) {
+            mustBe(LPAREN);
+            ArrayList<JStatement> inits = null;
+            if (!see(SEMI)) {
+                inits = forInit();
+                mustBe(SEMI);
+            } else {
+                mustBe(SEMI);
+            }
+            JExpression expr = null;
+            if (!see(SEMI)) {
+                expr = expression();
+                mustBe(SEMI);
+            } else {
+                mustBe(SEMI);
+            }
+            ArrayList<JStatement> updates = null;
+            if (!see(RPAREN)) {
+                updates = forUpdate();
+                mustBe(RPAREN);
+            } else {
+                mustBe(RPAREN);
+            }
+            return new JForStatement(line, inits, expr, updates, statement());
+        }
+        // Added Proj3 P8
+        else if (have(SWITCH)) {
+            JExpression test = parExpression();
+            mustBe(LCURLY);
+            ArrayList<SwitchStatementGroup> switchBlockStmtGroup =
+                    new ArrayList<SwitchStatementGroup>();
+            while (!see(RCURLY) && !see(EOF)) {
+                switchBlockStmtGroup.add(switchBlockStatementGroup());
+            }
+            mustBe(RCURLY);
+            return new JSwitchStatement(line, test, switchBlockStmtGroup);
+        }
+        // Added Proj3 P9
+        else if (have(TRY)) {
+            JBlock tryBlock = block();
+            ArrayList<JFormalParameter> params = null;
+            ArrayList<JBlock> catchBlocks = null;
+            if (see(CATCH)) {
+                params = new ArrayList<JFormalParameter>();
+                catchBlocks = new ArrayList<JBlock>();
+                while (have(CATCH)) {
+                    mustBe(LPAREN);
+                    params.add(formalParameter());
+                    mustBe(RPAREN);
+                    catchBlocks.add(block());
+                }
+            }
+            if (have(FINALLY)) {
+                return new JTryStatement(line, tryBlock, params, catchBlocks, block());
+            }
+            return new JTryStatement(line, tryBlock, params, catchBlocks, null);
+        }
+        else if (have(THROW)) {
+            JExpression expr = expression();
+            mustBe(SEMI);
+            return new JThrowStatement(line, expr);
+        }
+        else {
             // Must be a statementExpression.
             JStatement statement = statementExpression();
             mustBe(SEMI);
             return statement;
         }
+
     }
 
+    /**
+     * Added Proj3 P5
+     * Parses the initialization section of the 'for' loop and returns an AST for it.
+     *
+     * <pre>
+     *     forInit ::= statementExpression { COMMA statementExpression }
+     *                                      | type variableDeclarators
+     * </pre>
+     * @return an AST for the for-statement init
+     */
+    private ArrayList<JStatement> forInit() {
+        ArrayList<JStatement> statements = new ArrayList<JStatement>();
+        if (seeReferenceType()) {
+            do {
+                statements.add(statementExpression());
+            } while(have(COMMA));
+        } else {
+            int line = scanner.token().line();
+            ArrayList<JVariableDeclarator> varDecls = variableDeclarators(type());
+            statements.add(new JVariableDeclaration(line, varDecls));
+        }
+        return statements;
+    }
+
+//    Added Proj3 P5
+    /**
+     * Parses the update section of the 'for' loop and returns an AST for it.
+     *
+     * <pre>
+     *     forUpdate ::= statementExpression { COMMA statementExpression }
+     * </pre>
+     * @return an AST for the for-statement update
+     */
+    private ArrayList<JStatement> forUpdate() {
+        ArrayList<JStatement> statements = new ArrayList<JStatement>();
+        do {
+            statements.add(statementExpression());
+        } while(have(COMMA));
+        return statements;
+    }
     /**
      * Parses and returns a list of formal parameters.
      *
@@ -371,6 +659,49 @@ public class Parser {
      *
      * @return a list of formal parameters.
      */
+
+    /**
+     * Parses a switch block statement group.
+     *
+     * <pre>
+     *   switchBlockStatementGroup ::= switchLabel { switchLabel } { blockStatement }
+     * </pre>
+     *
+     * @return an object that contains the labels and block statements.
+     */
+    private SwitchStatementGroup switchBlockStatementGroup() {
+        ArrayList<JExpression> switchLabels = new ArrayList<JExpression>();
+        do {
+            switchLabels.add(switchLabel());
+        } while (see(CASE) || see(DEFAULT));
+        ArrayList<JStatement> blockStatements = new ArrayList<JStatement>();
+        while (!see(CASE) && !see(DEFAULT) && !see(RCURLY)) {
+            blockStatements.add(blockStatement());
+        }
+        return new SwitchStatementGroup(switchLabels, blockStatements);
+    }
+    /**
+     * Parses a switch label.
+     *
+     * <pre>
+     *   switchLabel ::= CASE expression COLON
+     *                 | DEFLT COLON
+     * </pre>
+     *
+     * @return the expression for the case label or null for the default label.
+     */
+    private JExpression switchLabel() {
+        JExpression expr = null;
+        if (have(CASE)) {
+            expr = expression();
+            mustBe(COLON);
+        } else if (have(DEFAULT)) {
+            mustBe(COLON);
+        } else {
+            reportParserError("case, default, or '}' expected");
+        }
+        return expr;
+    }
     private ArrayList<JFormalParameter> formalParameters() {
         ArrayList<JFormalParameter> parameters = new ArrayList<JFormalParameter>();
         mustBe(LPAREN);
@@ -555,7 +886,7 @@ public class Parser {
      * Parses and returns a basic type.
      *
      * <pre>
-     *   basicType ::= BOOLEAN | CHAR | INT
+     *   basicType ::= BOOLEAN | CHAR | INT | LONG | DOUBLE
      * </pre>
      *
      * @return a basic type.
@@ -567,7 +898,14 @@ public class Parser {
             return Type.CHAR;
         } else if (have(INT)) {
             return Type.INT;
-        } else {
+        }
+        // Added Proj3 P1. Support for long and double
+        else if (have(LONG)) {
+            return Type.LONG;
+        } else if (have(DOUBLE)) {
+            return Type.DOUBLE;
+        }
+        else {
             reportParserError("Type sought where %s found", scanner.token().image());
             return Type.ANY;
         }
@@ -648,22 +986,79 @@ public class Parser {
      * Parses an assignment expression and returns an AST for it.
      *
      * <pre>
-     *   assignmentExpression ::= conditionalAndExpression
+     *   assignmentExpression ::= conditionalExpression
      *                                [ ( ASSIGN | PLUS_ASSIGN ) assignmentExpression ]
+     *                                [ ( ASSIGN | SUBTRACTION_ASSIGN ) assignmentExpression ]
+     *                                [ ( ASSIGN | PROD_ASSIGN) assignmentExpression ]
+     *                                [ ( ASSIGN | DIVIDE_ASSIGN) assignmentExpression ]
+     *                                [ ( ASSIGN | MOD_ASSIGN) assignmentExpression ]
+     *                                [ ( ASSIGN | AND_ASSIGN) assignmentExpression ]
+     *                                [ ( ASSIGN | OR_ASSIGN) assignmentExpression ]
+     *                                [ ( ASSIGN | XOR_ASSIGN) assignmentExpression ]
+     *                                [ ( ASSIGN | ALSHIFT_ASSIGN) assignmentExpression ]
+     *                                [ ( ASSIGN | ARSHIFT_ASSIGN) assignmentExpression ]
+     *                                [ ( ASSIGN | LOGRSHIFT_ASSIGN) assignmentExpression ]
      * </pre>
      *
      * @return an AST for an assignment expression.
      */
     private JExpression assignmentExpression() {
         int line = scanner.token().line();
-        JExpression lhs = conditionalAndExpression();
+        // Proj3 P3, modified for conditional expression. method below
+//        JExpression lhs = conditionalAndExpression();
+        JExpression lhs = conditionalExpression();
         if (have(ASSIGN)) {
             return new JAssignOp(line, lhs, assignmentExpression());
         } else if (have(PLUS_ASSIGN)) {
             return new JPlusAssignOp(line, lhs, assignmentExpression());
-        } else {
+        }
+        // Added Proj3 P2. Operator Support. most of it is here
+        else if (have(SUBTRACTION_ASSIGN)) {
+            return new JMinusAssignOp(line, lhs, assignmentExpression());
+        } else if (have(PROD_ASSIGN)) {
+            return new JStarAssignOp(line, lhs, assignmentExpression());
+        } else if (have(DIVIDE_ASSIGN)) {
+            return new JDivAssignOp(line, lhs, assignmentExpression());
+        } else if (have(MOD_ASSIGN)) {
+            return new JRemAssignOp(line, lhs, assignmentExpression());
+        } else if (have(AND_ASSIGN)) {
+            return new JAndAssignOp(line, lhs, assignmentExpression());
+        } else if (have(OR_ASSIGN)) {
+            return new JOrAssignOp(line, lhs, assignmentExpression());
+        } else if (have(XOR_ASSIGN)) {
+            return new JXorAssignOp(line, lhs, assignmentExpression());
+        } else if (have(ALSHIFT_ASSIGN)) {
+            return new JALeftShiftAssignOp(line, lhs, assignmentExpression());
+        } else if (have(ARSHIFT_ASSIGN)) {
+            return new JARightShiftAssignOp(line, lhs, assignmentExpression());
+        } else if (have(LOGRSHIFT_ASSIGN)) {
+            return new JLRightShiftAssignOp(line, lhs, assignmentExpression());
+        }
+        else {
             return lhs;
         }
+    }
+
+    /**
+     * Parses a conditional expression and return an AST for it.
+     *
+     * <pre>
+     *   conditionalExpression ::= conditionalOrExpression [ QUESTION_MARK expression COLON
+     *                                                       conditionalExpression ]
+     * </pre>
+     *
+     * @return an AST for a conditional expression.
+     */
+    private JExpression conditionalExpression() {
+        int line = scanner.token().line();
+        JExpression expr = conditionalOrExpression();
+        if (have(QUESTION_MARK)) {
+            JExpression thenPart = expression();
+            mustBe(COLON);
+            JExpression elsePart = conditionalExpression();
+            return new JConditionalExpression(line, expr, thenPart, elsePart);
+        }
+        return expr;
     }
 
     /**
@@ -679,12 +1074,37 @@ public class Parser {
     private JExpression conditionalAndExpression() {
         int line = scanner.token().line();
         boolean more = true;
-//        JExpression lhs = equalityExpression();
         // Added Proj1 P3 BitwiseOp
         JExpression lhs = inclusiveOrExpression();
         while (more) {
             if (have(LAND)) {
                 lhs = new JLogicalAndOp(line, lhs, equalityExpression());
+            } else {
+                more = false;
+            }
+        }
+        return lhs;
+    }
+
+    /**
+     * Added Proj3 P2
+     *
+     * Parses a conditional-or expression and returns an AST for it.
+     *
+     * <pre>
+     *   conditionalOrExpression ::= conditionalAndExpression
+     *                                    { LOR conditionalAndExpression }
+     * </pre>
+     *
+     * @return an AST for a conditional-or expression.
+     */
+    private JExpression conditionalOrExpression(){
+        int line = scanner.token().line();
+        boolean more = true;
+        JExpression lhs = conditionalAndExpression();
+        while (more){
+            if (have(LOR)){
+                lhs = new JLogicalOrOp(line, lhs, equalityExpression());
             } else {
                 more = false;
             }
@@ -767,11 +1187,13 @@ public class Parser {
         return lhs;
     }
 
+
     /**
      * Parses an equality expression and returns an AST for it.
      *
      * <pre>
      *   equalityExpression ::= relationalExpression { EQUAL relationalExpression }
+     *                          relationalExpression { NOT_EQUALS relationalExpression }
      * </pre>
      *
      * @return an AST for an equality expression.
@@ -783,7 +1205,12 @@ public class Parser {
         while (more) {
             if (have(EQUAL)) {
                 lhs = new JEqualOp(line, lhs, relationalExpression());
-            } else {
+            }
+            // Added Proj3 p2
+            else if (have(NOT_EQUALS)){
+                lhs = new JNotEqualOp(line, lhs, relationalExpression());
+            }
+            else {
                 more = false;
             }
         }
@@ -822,28 +1249,32 @@ public class Parser {
      *
      * <pre>
      *
-     *   relationalExpression ::= additiveExpression [ ( GT | LE
-     *                                      | ARShift | ALeftShift | LRightShift ) shiftExpression
-     *      *                                               | INSTANCEOF referenceType ]
+     *   relationalExpression ::= additiveExpression [ ( GT | LE | GREAT_EQUAL | COMPARE_LESS shiftExpression ]
+     *      *                                               [ INSTANCEOF referenceType ]
      * </pre>
      *
      * @return an AST for a relational expression.
      */
     private JExpression relationalExpression() {
         int line = scanner.token().line();
-//        JExpression lhs = additiveExpression();
         // Modified Proj1 P4
         JExpression lhs  = shiftExpression();
         if (have(GT)) {
-//            return new JGreaterThanOp(line, lhs, additiveExpression());
             // Modified Proj1 P4
-            return new JGreaterEqualOp(line, lhs, shiftExpression());
+            return new JGreaterThanOp(line, lhs, shiftExpression());
         } else if (have(LE)) {
-//            return new JLessEqualOp(line, lhs, additiveExpression());
             return new JLessEqualOp(line, lhs, shiftExpression());
         } else if (have(INSTANCEOF)) {
             return new JInstanceOfOp(line, lhs, referenceType());
-        } else {
+        }
+        // Added Proj3 P2
+        else if (have(GREAT_EQUAL)) {
+            return new JGreaterEqualOp(line, lhs, shiftExpression());
+        }
+        else if (have(COMPARE_LESS)) {
+            return new JLessThanOp(line, lhs, shiftExpression());
+        }
+        else {
             return lhs;
         }
     }
@@ -927,6 +1358,10 @@ public class Parser {
         else if(have(PLUS)){
             return new JUnaryPlusOp(line, unaryExpression());
         }
+        // Added Proj3 P2
+        else if(have(DEC)){
+            return new JPreDecrementOp(line, unaryExpression());
+        }
         else {
             return simpleUnaryExpression();
         }
@@ -970,7 +1405,7 @@ public class Parser {
      * Parses a postfix expression and returns an AST for it.
      *
      * <pre>
-     *   postfixExpression ::= primary { selector } { DEC }
+     *   postfixExpression ::= primary { selector } { DEC | INC }
      * </pre>
      *
      * @return an AST for a postfix expression.
@@ -984,6 +1419,9 @@ public class Parser {
         while (have(DEC)) {
             primaryExpr = new JPostDecrementOp(line, primaryExpr);
         }
+        // Added Proj3 p2
+        while (have(INC))
+            primaryExpr = new JPostIncrementOp(line, primaryExpr);
         return primaryExpr;
     }
 
@@ -1155,6 +1593,7 @@ public class Parser {
      *
      * <pre>
      *   literal ::= CHAR_LITERAL | FALSE | INT_LITERAL | NULL | STRING_LITERAL | TRUE
+     *                         | LONG | DOUBLE
      * </pre>
      *
      * @return an AST for a literal.
@@ -1173,7 +1612,15 @@ public class Parser {
             return new JLiteralString(line, scanner.previousToken().image());
         } else if (have(TRUE)) {
             return new JLiteralBoolean(line, scanner.previousToken().image());
-        } else {
+        }
+        // Added Proj3 P1. Support for long and double
+        else if (have(DOUBLE_LITERAL)){
+            return new JLiteralDouble(line, scanner.previousToken().image());
+        }
+        else if (have(LONG_LITERAL)){
+            return new JLiteralLong(line, scanner.previousToken().image());
+        }
+        else {
             reportParserError("Literal sought where %s found", scanner.token().image());
             return new JWildExpression(line);
         }
@@ -1331,7 +1778,8 @@ public class Parser {
 
     // Returns true if we are looking at a basic type, and false otherwise.
     private boolean seeBasicType() {
-        return (see(BOOLEAN) || see(CHAR) || see(INT));
+        // Added Proj3 P1, see(DOUBLE) & see(LONG)
+        return (see(BOOLEAN) || see(CHAR) || see(INT) || see(DOUBLE) || see(LONG));
     }
 
     // Returns true if we are looking at a reference type, and false otherwise.

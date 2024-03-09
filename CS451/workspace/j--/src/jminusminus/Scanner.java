@@ -229,7 +229,7 @@ class Scanner {
                 // Proj2 P2, decrement
                 else if (ch == '='){
                     nextCh();
-                    return new TokenInfo(DECREMENT, line);
+                    return new TokenInfo(SUBTRACTION_ASSIGN, line);
                 } else {
                     return new TokenInfo(MINUS, line);
                 }
