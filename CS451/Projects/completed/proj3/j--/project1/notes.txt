@@ -1,0 +1,49 @@
+1. Provide a high-level description (ie, using minimal amount of technical
+   jargon) of the project in no more than 200 words.
+
+   The project objective was to enhance the j-- compiler with
+   4 challenges in consideration:
+   - Clemitter and Bytecode:
+     Generating bytecode instructions for a java program without
+     a conventional java source code file with the help of the Clemitter
+     interface.
+   - Arithmetic Functionality:
+     Adding support to the simple Division, Remainder and Unary Plus arithmetic
+     operations. This meant tweaking the compiler to recognize these operations in Java code,
+     which involved adjusting several parts of the compiler to get it all working smoothly.
+   - Bitwise Operations:
+     Adding support  the compiler to perform bitwise operations, which is all about manipulating
+     individual bits within data. This required similar modifications to the compiler as with
+     the arithmetic operations, ensuring it could understand and execute these low-level operations.
+   - Shift Operations:
+     Support for moving bits within a number to the left or right. This was a bit tricky since
+     it needed careful adjustments to the compiler to correctly interpret and execute these operations,
+     including setting up conditions to correctly read sequences of characters in the code.
+
+2. Did you receive help from anyone? List their names, status (classmate, 
+   CS451/651 grad, TA, other), and the nature of help received.
+
+   Name               Status       Help Received
+   ----               ------       -------------
+
+   ...                ...          ...
+
+3. List any other comments here. Feel free to provide any feedback on how
+   much you learned from doing the assignment, and whether you enjoyed
+   doing it.
+
+   ...
+4. Notes to self:
+
+Use the following in 'GenIsPrime.java', might be all or none
+   ALOAD: Load a reference onto the stack from a local variable.
+   ICONST: Push a constant integer value onto the stack.
+   ILOAD: Load an integer value from a local variable onto the stack.
+   ISTORE: Store an integer value from the stack into a local variable.
+   DUP: Duplicate the value on top of the stack.
+   INVOKESPECIAL: Invoke a constructor or private method on an object.
+   INVOKESTATIC: Invoke a static method.
+   IFEQ: Branch if the top value on the stack is equal to zero.
+   INVOKEVIRTUAL: Invoke a virtual method (typically a non-static method).
+   IDIV: Divide two integers.
+   IF_ICMPLT: Pop top two ints in stack and compare to make sure 1st > 2nd. If satisfied then returns true.
