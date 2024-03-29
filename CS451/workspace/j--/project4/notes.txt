@@ -1,7 +1,17 @@
 1. Provide a high-level description (ie, using minimal amount of technical
    jargon) of the project in no more than 200 words.
 
-   ...
+  The Java Parser is a critical tool for comprehending and processing
+  Java Source Code. The goal of this project is to add functionality to the
+  own JavaCC parser so that it is able to analyze Java Source Code and
+  correctly construct the respective Abstract Syntax Trees and Token images,
+  which makes it easier to work with and manipulate Java programs.
+  Our task was to equip the parser with functionality so that it supported
+  expressions, operators, conditional statements, and fundamental data types.
+  The 'j--.jj' file focuses in the initial parsing stage, creating a
+  structured representation of a Java program source code.
+  This project serves as a valuable starting point for developers aiming to construct more
+  complex Java-related tools and applications.
 
 2. Did you receive help from anyone? List their names, status (classmate, 
    CS451/651 grad, TA, other), and the nature of help received.
@@ -15,4 +25,4 @@
    much you learned from doing the assignment, and whether you enjoyed
    doing it.
 
-   ...
+   I don't like Java.
