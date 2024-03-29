@@ -1,0 +1,51 @@
+<html>
+  <head>
+  	<script src="https://cdn.jsdelivr.net/npm/vega@latest"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vega-lite@latest"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vega-embed@latest"></script>
+  </head>
+  <body>
+  	<div id='vis'></div>
+    <div id='vis2'></div>
+  	<script>
+  		chart1 = {
+
+        "width": 1000,
+
+  			"data": {"url": "https://vega.github.io/vega-lite/data/seattle-weather.csv"},
+
+  			"mark": "circle",
+
+  			"encoding": {
+  				"x": {"bin": true, "field": "precipitation"},
+  				"y": {"aggregate": "count"},
+          "color": {"field":"weather", "type":"nominal"}
+  			}
+
+  		};
+
+  		vegaEmbed("#vis", chart1, {actions: false});
+
+
+      chart2 = {
+
+        "width": 1000,
+
+        "data": {"url": "https://cs617.org/data/boston_weather.csv"},
+
+        "mark": "circle",
+
+        "encoding": {
+          "x": {"bin": true, "field": "prcp"},
+          "y": {"aggregate": "count"},
+          // "color": {"field":"weather", "type":"nominal"}
+        }
+
+      };
+
+      vegaEmbed("#vis2", chart2, {actions: false});
+
+
+  	</script>
+  </body>
+</html>

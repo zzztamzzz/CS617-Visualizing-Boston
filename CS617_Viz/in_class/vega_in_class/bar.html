@@ -1,0 +1,27 @@
+<html>
+  <head>
+  	<script src="https://cdn.jsdelivr.net/npm/vega@latest"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vega-lite@latest"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vega-embed@latest"></script>
+  </head>
+  <body>
+  	<div id='vis'></div>
+  	<script>
+  		chart1 = {
+
+  			"data": {"url": "https://vega.github.io/vega-lite/data/seattle-weather.csv"},
+
+  			"mark": "bar",
+
+  			"encoding": {
+  				"x": {"bin": true, "field": "precipitation"},
+  				"y": {"aggregate": "count"}
+  			}
+
+  		};
+
+  		vegaEmbed("#vis", chart1, {actions: false});
+
+  	</script>
+  </body>
+</html>

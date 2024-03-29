@@ -1,0 +1,115 @@
+<html>
+  <head>
+  	<script src="https://cdn.jsdelivr.net/npm/vega@latest"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vega-lite@latest"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vega-embed@latest"></script>
+  </head>
+  <body>
+  	<div id='vis'></div>
+  	<script>
+  		chart1 = {
+
+        
+
+        "params": [{
+          "name": "zoomdsgdsgdsf",
+          "select": "interval",
+          "bind": "scales"
+        }],
+
+
+        "vconcat": [
+          {
+            "width": 1000,
+
+            "data": {"url": "https://vega.github.io/vega-lite/data/seattle-weather.csv"},
+
+            "mark": "circle",
+
+            "title": "Seattle",
+
+
+
+            "encoding": {
+              "x": {
+                "field":"date", 
+                "timeUnit":"monthdate", 
+                "axis": {"format": "%b"},
+                "title": "Month"
+              },
+              "y": {
+                "field":"temp_max", 
+                "type": "quantitative",
+                "title": "Maximum Temperature (C)"
+              },
+              "size": {
+                "field": "precipitation",
+                "type": "quantitative",
+                "scale": {"domain": [-1, 50]}
+              }
+              // "color": {"field":"weather", "type":"nominal"}
+            }
+
+          },
+          {
+
+            "width": 1000,
+
+            "data": {"url": "https://cs617.org/data/boston_weather.csv"},
+
+            "mark": "circle",
+
+            "title": "Boston",
+
+            "transform": [{
+
+              "filter": {
+                  
+                  "field": "time",
+                  
+                  "range": [
+                    {"year": 2012, "month": 1, "date": 1},
+                    {"year": 2016, "month": 12, "date": 31}
+                  ]
+
+                }
+
+            }],
+
+
+            "encoding": {
+              "x": {
+                "field":"time", 
+                "timeUnit":"monthdate", 
+                "axis": {"format": "%b"},
+                "title": "Month"
+              },
+              "y": {
+                "field":"tmax", 
+                "type": "quantitative",
+                "title": "Maximum Temperature (C)"
+              },
+              "size": {
+                "field": "prcp",
+                "type": "quantitative",
+                "scale": {"domain": [-1, 50]}
+              }
+
+            }
+
+          }
+
+          ]
+
+
+
+  		};
+
+
+
+      vegaEmbed("#vis", chart1, {actions: false});
+
+
+  	</script>
+  </body>
+</html>
