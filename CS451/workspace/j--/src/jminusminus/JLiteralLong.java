@@ -35,7 +35,8 @@ class JLiteralLong extends JExpression {
      * {@inheritDoc}
      */
     public JExpression analyze(Context context) {
-        // TODO
+        // Added Proj5, same as JLiteralInt
+        type = Type.LONG;
         return this;
     }
 
@@ -43,7 +44,17 @@ class JLiteralLong extends JExpression {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        // Added Proj5, simpler than JLiteralInt
+        long myLong = toLong();
+        if(myLong == 0L){
+            output.addNoArgInstruction(LCONST_0);
+        }
+        else if(myLong == 1L){
+        output.addNoArgInstruction(LCONST_1);
+        }
+        else{
+        output.addLDCInstruction(myLong);
+        }
     }
 
     /**

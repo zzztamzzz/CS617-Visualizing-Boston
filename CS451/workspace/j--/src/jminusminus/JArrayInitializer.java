@@ -80,6 +80,12 @@ class JArrayInitializer extends JExpression {
                 output.addNoArgInstruction(BASTORE);
             } else if (componentType == Type.CHAR) {
                 output.addNoArgInstruction(CASTORE);
+            // Added Proj 5, double. Only once this time
+            } else if (componentType == Type.DOUBLE) {
+                output.addNoArgInstruction(DASTORE);
+            // Added Proj 5, long
+            } else if (componentType == Type.LONG) {
+                output.addNoArgInstruction(LASTORE);
             } else if (!componentType.isPrimitive()) {
                 output.addNoArgInstruction(AASTORE);
             }

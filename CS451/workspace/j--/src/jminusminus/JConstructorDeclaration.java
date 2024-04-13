@@ -15,7 +15,8 @@ class JConstructorDeclaration extends JMethodDeclaration implements JMember {
 
     // Defining class
     private JClassDeclaration definingClass;
-
+    // Added Proj 5
+    private ArrayList<String> exceptionNames;
     /**
      * Constructs an AST node for a constructor declaration.
      *
@@ -75,11 +76,25 @@ class JConstructorDeclaration extends JMethodDeclaration implements JMember {
         for (JFormalParameter param : params) {
             LocalVariableDefn defn = new LocalVariableDefn(param.type(), this.context.nextOffset());
             defn.initialize();
+            // Added Proj5
+            if (param.type() == Type.LONG){
+                this.context.nextOffset();
+            }
+            else if (param.type() == Type.DOUBLE){
+                this.context.nextOffset();
+            }
             this.context.addEntry(param.line(), param.name(), defn);
         }
 
         if (body != null) {
             body = body.analyze(this.context);
+        }
+        // Added Proj5
+        if (exceptions != null) {
+            exceptionNames = new ArrayList<>();
+            for (TypeName exceptionName : exceptions) {
+                exceptionNames.add(exceptionName.jvmName());
+            }
         }
         return this;
     }
@@ -102,7 +117,8 @@ class JConstructorDeclaration extends JMethodDeclaration implements JMember {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        output.addMethod(mods, "<init>", descriptor, null, false);
+        // Modified Proj 5
+        output.addMethod(mods, "<init>", descriptor, exceptionNames, false);
         if (!invokesConstructor) {
             output.addNoArgInstruction(ALOAD_0);
             output.addMemberAccessInstruction(INVOKESPECIAL, definingClass.superType().jvmName(),
