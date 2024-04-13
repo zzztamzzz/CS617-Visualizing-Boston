@@ -111,8 +111,21 @@ class JNegateOp extends JUnaryExpression {
      */
     public JExpression analyze(Context context) {
         operand = operand.analyze(context);
-        operand.type().mustMatchExpected(line(), Type.INT);
-        type = Type.INT;
+        // Added Proj 5, include DOUBLE and LONG
+        if (operand.type() == Type.INT) {
+            operand.type().mustMatchExpected(line(), Type.INT);
+            type = Type.INT;
+        } else if (operand.type() == Type.DOUBLE) {
+            operand.type().mustMatchExpected(line(), Type.DOUBLE);
+            type = Type.DOUBLE;
+        } else if (operand.type() == Type.LONG) {
+            operand.type().mustMatchExpected(line(), Type.LONG);
+            type = Type.LONG;
+        }
+        else{
+            type = Type.ANY;
+            JAST.compilationUnit.reportSemanticError(line(), "No LValue.");
+        }
         return this;
     }
 
@@ -121,7 +134,16 @@ class JNegateOp extends JUnaryExpression {
      */
     public void codegen(CLEmitter output) {
         operand.codegen(output);
-        output.addNoArgInstruction(INEG);
+        // Added Proj 5, for INT, DOUBLE and LONG
+        if (type == Type.INT) {
+            output.addNoArgInstruction(INEG);
+        } else if (type == Type.DOUBLE) {
+            output.addNoArgInstruction(DNEG);
+
+        } else if (type == Type.LONG) {
+            output.addNoArgInstruction(LNEG);
+
+        }
     }
 }
 
@@ -255,10 +277,23 @@ class JUnaryPlusOp extends JUnaryExpression {
      * {@inheritDoc}
      */
     public JExpression analyze(Context context) {
-        // Added Proj1 P2 for UnaryPlusOP
-        operand = (JExpression) operand.analyze(context);
-        operand.type().mustMatchExpected(line(), Type.INT);
-        type = Type.INT;
+        // Modified Proj 5 for INT, DOUBLE and LONG
+        operand = operand.analyze(context);
+        if (operand.type() == Type.INT) {
+            operand.type().mustMatchExpected(line(), Type.INT);
+            type = Type.INT;
+        }
+        else if (operand.type() == Type.DOUBLE) {
+            operand.type().mustMatchExpected(line(), Type.DOUBLE);
+            type = Type.DOUBLE;
+        }
+        else if (operand.type() == Type.LONG) {
+                operand.type().mustMatchExpected(line(), Type.LONG);
+                type = Type.LONG;
+        } else {
+            type = Type.ANY;
+            JAST.compilationUnit.reportSemanticError(line(), "operand to - must have LValue.");
+        }
         return this;
     }
 
@@ -325,7 +360,10 @@ class JPostIncrementOp extends JUnaryExpression {
      * {@inheritDoc}
      */
     public JExpression analyze(Context context) {
-        // TODO
+        // Added Proj 5, INT
+        operand = operand.analyze(context);
+        operand.type().mustMatchExpected(line(), Type.INT);
+        type = Type.INT;
         return this;
     }
 
@@ -333,7 +371,20 @@ class JPostIncrementOp extends JUnaryExpression {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        // Added Proj 5 INT
+        if (operand instanceof JVariable) {
+            int offset = ((LocalVariableDefn) ((JVariable) operand).iDefn()).offset();
+            if (!isStatementExpression) { operand.codegen(output); }
+            output.addIINCInstruction(offset, 1);
+        } else {
+            ((JLhs) operand).codegenLoadLhsRvalue(output);
+            ((JLhs) operand).codegenLoadLhsLvalue(output);
+            if (!isStatementExpression) { ((JLhs) operand).codegenDuplicateRvalue(output); }
+            output.addNoArgInstruction(IADD);
+            output.addNoArgInstruction(ICONST_1);
+            ((JLhs) operand).codegenStore(output);
+        }
+
     }
 }
 
@@ -355,7 +406,15 @@ class JPreDecrementOp extends JUnaryExpression {
      * {@inheritDoc}
      */
     public JExpression analyze(Context context) {
-        // TODO
+        // Added Proj 5, INT
+        if (!(operand instanceof JLhs)) {
+            JAST.compilationUnit.reportSemanticError(line, "++ needs LValue.");
+            type = Type.ANY;
+        } else {
+            operand = (JExpression) operand.analyze(context);
+            operand.type().mustMatchExpected(line(), Type.INT);
+            type = Type.INT;
+        }
         return this;
     }
 
@@ -363,6 +422,20 @@ class JPreDecrementOp extends JUnaryExpression {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        // Added Proj 5, INT
+        if (operand instanceof JVariable) {
+            int offset = ((LocalVariableDefn) ((JVariable) operand).iDefn()).offset();
+            output.addIINCInstruction(offset, -1);
+            if (!isStatementExpression) {
+                operand.codegen(output);
+            }
+        } else {
+            ((JLhs) operand).codegenLoadLhsRvalue(output);
+            ((JLhs) operand).codegenLoadLhsLvalue(output);
+            output.addNoArgInstruction(ISUB);
+            output.addNoArgInstruction(ICONST_1);
+            if (!isStatementExpression) {((JLhs) operand).codegenDuplicateRvalue(output);}
+            ((JLhs) operand).codegenStore(output);
+        }
     }
 }

@@ -140,7 +140,12 @@ class JLogicalOrOp extends JBooleanBinaryExpression {
      * {@inheritDoc}
      */
     public JExpression analyze(Context context) {
-        // TODO
+        // Added Proj 5, CTRL+C CTRL+V from JLogicalAndOp
+        lhs = (JExpression) lhs.analyze(context);
+        rhs = (JExpression) rhs.analyze(context);
+        lhs.type().mustMatchExpected(line(), Type.BOOLEAN);
+        rhs.type().mustMatchExpected(line(), Type.BOOLEAN);
+        type = Type.BOOLEAN;
         return this;
     }
 
@@ -148,7 +153,16 @@ class JLogicalOrOp extends JBooleanBinaryExpression {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output, String targetLabel, boolean onTrue) {
-        // TODO
+        // Added Proj 5, CTRL+C CTRL+V from JLogicalAndOp
+        if (onTrue) {
+            String falseLabel = output.createLabel();
+            lhs.codegen(output, falseLabel, false);
+            rhs.codegen(output, targetLabel, true);
+            output.addLabel(falseLabel);
+        } else {
+            lhs.codegen(output, targetLabel, false);
+            rhs.codegen(output, targetLabel, false);
+        }
     }
 }
 
@@ -172,7 +186,12 @@ class JNotEqualOp extends JBooleanBinaryExpression {
      * {@inheritDoc}
      */
     public JExpression analyze(Context context) {
-        // TODO
+        // Added Proj 5, CTRL+C CTRL+V from JLogicalAndOp and slight modification
+        lhs = (JExpression) lhs.analyze(context);
+        rhs = (JExpression) rhs.analyze(context);
+        lhs.type().mustMatchExpected(line(), lhs.type());
+        rhs.type().mustMatchExpected(line(), rhs.type());
+        type = Type.BOOLEAN;
         return this;
     }
 
@@ -180,6 +199,14 @@ class JNotEqualOp extends JBooleanBinaryExpression {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output, String targetLabel, boolean onTrue) {
-        // TODO
+        // Added Proj 5
+        lhs.codegen(output);
+        rhs.codegen(output);
+        if (lhs.type().isReference()) {
+            output.addBranchInstruction(onTrue ? IF_ACMPNE : IF_ACMPEQ, targetLabel);
+        }
+        else {
+            output.addBranchInstruction(onTrue ? IF_ICMPNE : IF_ICMPEQ, targetLabel);
+        }
     }
 }

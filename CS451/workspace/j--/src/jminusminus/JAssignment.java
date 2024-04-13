@@ -41,7 +41,7 @@ class JAssignOp extends JAssignment {
      */
     public JExpression analyze(Context context) {
         if (!(lhs instanceof JLhs)) {
-            JAST.compilationUnit.reportSemanticError(line(), "Illegal lhs for assignment");
+            JAST.compilationUnit.reportSemanticError(line(), "Illegal lhs AssignOp");
         } else {
             lhs = (JExpression) ((JLhs) lhs).analyzeLhs(context);
         }
@@ -91,7 +91,7 @@ class JPlusAssignOp extends JAssignment {
      */
     public JExpression analyze(Context context) {
         if (!(lhs instanceof JLhs)) {
-            JAST.compilationUnit.reportSemanticError(line(), "Illegal lhs for assignment");
+            JAST.compilationUnit.reportSemanticError(line(), "Illegal lhs PlusAssign");
             return this;
         } else {
             lhs = (JExpression) ((JLhs) lhs).analyzeLhs(context);
@@ -103,6 +103,14 @@ class JPlusAssignOp extends JAssignment {
         } else if (lhs.type().equals(Type.STRING)) {
             rhs = (new JStringConcatenationOp(line, lhs, rhs)).analyze(context);
             type = Type.STRING;
+        }
+        // Added Proj 5 DOUBLE and LONG
+        else if (lhs.type().equals(Type.DOUBLE)) {
+            rhs.type().mustMatchExpected(line(), Type.DOUBLE);
+            type = Type.DOUBLE;
+        } else if (lhs.type().equals(Type.LONG)) {
+                rhs.type().mustMatchExpected(line(), Type.LONG);
+                type = Type.LONG;
         } else {
             JAST.compilationUnit.reportSemanticError(line(),
                     "Invalid lhs type for +=: " + lhs.type());
@@ -117,7 +125,18 @@ class JPlusAssignOp extends JAssignment {
         ((JLhs) lhs).codegenLoadLhsLvalue(output);
         if (lhs.type().equals(Type.STRING)) {
             rhs.codegen(output);
-        } else {
+        }
+        // Added Proj5 DOUBLE and LONG
+        else if (lhs.type().equals(Type.DOUBLE)) {
+            ((JLhs) lhs).codegenLoadLhsRvalue(output);
+            rhs.codegen(output);
+            output.addNoArgInstruction(DADD);
+        } else if (lhs.type().equals(Type.LONG)) {
+                ((JLhs) lhs).codegenLoadLhsRvalue(output);
+                rhs.codegen(output);
+                output.addNoArgInstruction(LADD);
+        }
+        else {
             ((JLhs) lhs).codegenLoadLhsRvalue(output);
             rhs.codegen(output);
             output.addNoArgInstruction(IADD);
@@ -148,7 +167,27 @@ class JMinusAssignOp extends JAssignment {
      * {@inheritDoc}
      */
     public JExpression analyze(Context context) {
-        // TODO
+        // Added Proj 5 INT, DOUBLE and LONG
+        if (!(lhs instanceof JLhs)) {
+            JAST.compilationUnit.reportSemanticError(line(), "Illegal lhs MinueAssign");
+            return this;
+        } else {
+            lhs = (JExpression) ((JLhs) lhs).analyzeLhs(context);
+        }
+        rhs = (JExpression) rhs.analyze(context);
+        if (lhs.type().equals(Type.INT)) {
+            rhs.type().mustMatchExpected(line(), Type.INT);
+            type = Type.INT;
+        } else if (lhs.type().equals(Type.DOUBLE)) {
+            rhs.type().mustMatchExpected(line(), Type.DOUBLE);
+            type = Type.DOUBLE;
+        } else if (lhs.type().equals(Type.LONG)) {
+            type = Type.LONG;
+        }
+        else {
+            JAST.compilationUnit.reportSemanticError(line(),
+                    "Invalid lhs type for -=: " + lhs.type());
+        }
         return this;
     }
 
@@ -156,7 +195,25 @@ class JMinusAssignOp extends JAssignment {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        // Added Proj 5 LONG and DOUBLE
+        ((JLhs) lhs).codegenLoadLhsLvalue(output);
+        if (lhs.type().equals(Type.LONG)) {
+            ((JLhs) lhs).codegenLoadLhsRvalue(output);
+            rhs.codegen(output);
+            output.addNoArgInstruction(LSUB);
+
+        } else if (lhs.type().equals(Type.DOUBLE)) {
+            ((JLhs) lhs).codegenLoadLhsRvalue(output);
+            rhs.codegen(output);
+            output.addNoArgInstruction(DSUB);
+        } else {
+            ((JLhs) lhs).codegenLoadLhsRvalue(output);
+            rhs.codegen(output);
+            output.addNoArgInstruction(ISUB);
+        }
+        if (!isStatementExpression) {
+            ((JLhs) lhs).codegenDuplicateRvalue(output);
+        } ((JLhs) lhs).codegenStore(output);
     }
 }
 
@@ -179,7 +236,28 @@ class JStarAssignOp extends JAssignment {
      * {@inheritDoc}
      */
     public JExpression analyze(Context context) {
-        // TODO
+        // Added Proj 5 INT, DOUBLE and LONG
+        if (!(lhs instanceof JLhs)) {
+            JAST.compilationUnit.reportSemanticError(line(), "Illegal lhs StarAssign");
+            return this;
+        } else {
+            lhs = (JExpression) ((JLhs) lhs).analyzeLhs(context);
+        }
+        rhs = (JExpression) rhs.analyze(context);
+        if (lhs.type().equals(Type.INT)) {
+            rhs.type().mustMatchExpected(line(), Type.INT);
+            type = Type.INT;
+        } else if (lhs.type().equals(Type.DOUBLE)) {
+            rhs.type().mustMatchExpected(line(), Type.DOUBLE);
+            type = Type.DOUBLE;
+        } else if (lhs.type().equals(Type.LONG)) {
+                rhs.type().mustMatchExpected(line(), Type.LONG);
+                type = Type.LONG;
+        }
+        else {
+            JAST.compilationUnit.reportSemanticError(line(),
+                    "Invalid lhs type for *=: " + lhs.type());
+        }
         return this;
     }
 
@@ -187,9 +265,28 @@ class JStarAssignOp extends JAssignment {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        // Added Proj 5 LONG and DOUBLE
+        ((JLhs) lhs).codegenLoadLhsLvalue(output);
+        if (lhs.type().equals(Type.LONG)) {
+            ((JLhs) lhs).codegenLoadLhsRvalue(output);
+            rhs.codegen(output);
+            output.addNoArgInstruction(LMUL);
+        } else if (lhs.type().equals(Type.DOUBLE)) {
+            ((JLhs) lhs).codegenLoadLhsRvalue(output);
+            rhs.codegen(output);
+            output.addNoArgInstruction(DMUL);
+        } else {
+            ((JLhs) lhs).codegenLoadLhsRvalue(output);
+            rhs.codegen(output);
+            output.addNoArgInstruction(IMUL);
+        }
+        if (!isStatementExpression) {
+            ((JLhs) lhs).codegenDuplicateRvalue(output);
+    }
+        ((JLhs) lhs).codegenStore(output);
     }
 }
+
 
 /**
  * The AST node for a div-assign (/=) operation.
@@ -210,7 +307,28 @@ class JDivAssignOp extends JAssignment {
      * {@inheritDoc}
      */
     public JExpression analyze(Context context) {
-        // TODO
+        // Added Proj 5 INT, LONG and DOUBLE
+        if (!(lhs instanceof JLhs)) {
+            JAST.compilationUnit.reportSemanticError(line(), "Illegal lhs DivAssign");
+            return this;
+        } else {
+            lhs = (JExpression) ((JLhs) lhs).analyzeLhs(context);
+        }
+        rhs = (JExpression) rhs.analyze(context);
+        if (lhs.type().equals(Type.LONG)) {
+            rhs.type().mustMatchExpected(line(), Type.LONG);
+            type = Type.LONG;
+        } else if (lhs.type().equals(Type.INT)) {
+            rhs.type().mustMatchExpected(line(), Type.INT);
+            type = Type.INT;
+        } else if (lhs.type().equals(Type.DOUBLE)) {
+            rhs.type().mustMatchExpected(line(), Type.DOUBLE);
+            type = Type.DOUBLE;
+        }
+        else {
+            JAST.compilationUnit.reportSemanticError(line(),
+                    "Invalid lhs type for /=: " + lhs.type());
+        }
         return this;
     }
 
@@ -218,9 +336,28 @@ class JDivAssignOp extends JAssignment {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        // Added Proj 5 LONG and DOUBLE
+        ((JLhs) lhs).codegenLoadLhsLvalue(output);
+        if (lhs.type().equals(Type.LONG)) {
+            ((JLhs) lhs).codegenLoadLhsRvalue(output);
+            rhs.codegen(output);
+            output.addNoArgInstruction(LDIV);
+        } else if (lhs.type().equals(Type.DOUBLE)) {
+            ((JLhs) lhs).codegenLoadLhsRvalue(output);
+            rhs.codegen(output);
+            output.addNoArgInstruction(DDIV);
+        } else {
+            ((JLhs) lhs).codegenLoadLhsRvalue(output);
+            rhs.codegen(output);
+            output.addNoArgInstruction(IDIV);
+        }
+        if (!isStatementExpression) {
+            ((JLhs) lhs).codegenDuplicateRvalue(output);
+    }
+        ((JLhs) lhs).codegenStore(output);
     }
 }
+
 
 /**
  * The AST node for a rem-assign (%=) operation.
@@ -241,7 +378,30 @@ class JRemAssignOp extends JAssignment {
      * {@inheritDoc}
      */
     public JExpression analyze(Context context) {
-        // TODO
+        // Added Proj 5 INT, LONG and DOUBLE
+        if (!(lhs instanceof JLhs)) {
+            JAST.compilationUnit.reportSemanticError(line(), "Illegal lhs for assignment");
+            return this;
+        } else {
+            lhs = (JExpression) ((JLhs) lhs).analyzeLhs(context);
+        }
+        rhs = (JExpression) rhs.analyze(context);
+        if (lhs.type().equals(Type.INT)) {
+            rhs.type().mustMatchExpected(line(), Type.INT);
+            type = Type.INT;
+        }
+        else if (lhs.type().equals(Type.LONG)) {
+            rhs.type().mustMatchExpected(line(), Type.LONG);
+            type = Type.LONG;
+        } else if (lhs.type().equals(Type.DOUBLE)) {
+            rhs.type().mustMatchExpected(line(), Type.DOUBLE);
+            type = Type.DOUBLE;
+        }
+        else {
+            JAST.compilationUnit.reportSemanticError(line(),
+                    "Invalid lhs type for %=: " + lhs.type());
+        }
+
         return this;
     }
 
@@ -249,7 +409,25 @@ class JRemAssignOp extends JAssignment {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        // Added Proj 5 LONG and DOUBLE
+        ((JLhs) lhs).codegenLoadLhsLvalue(output);
+        if (lhs.type().equals(Type.LONG)) {
+            ((JLhs) lhs).codegenLoadLhsRvalue(output);
+            rhs.codegen(output);
+            output.addNoArgInstruction(LREM);
+        } else if (lhs.type().equals(Type.DOUBLE)) {
+            ((JLhs) lhs).codegenLoadLhsRvalue(output);
+            rhs.codegen(output);
+            output.addNoArgInstruction(DREM);
+        } else {
+            ((JLhs) lhs).codegenLoadLhsRvalue(output);
+            rhs.codegen(output);
+            output.addNoArgInstruction(IREM);
+        }
+        if (!isStatementExpression) {
+            ((JLhs) lhs).codegenDuplicateRvalue(output);
+        }
+        ((JLhs) lhs).codegenStore(output);
     }
 }
 
@@ -272,7 +450,14 @@ class JOrAssignOp extends JAssignment {
      * {@inheritDoc}
      */
     public JExpression analyze(Context context) {
-        // TODO
+        // Added Proj 5 INT
+        if (!(lhs instanceof JLhs)) {
+            JAST.compilationUnit.reportSemanticError(line(), "illegal lhs OrAssignOp");
+            return this;
+        } else { lhs = (JExpression) ((JLhs) lhs).analyzeLhs(context);}
+        rhs = (JExpression) rhs.analyze(context);
+        rhs.type().mustMatchExpected(line(), Type.INT);
+        type = Type.INT;
         return this;
     }
 
@@ -280,7 +465,13 @@ class JOrAssignOp extends JAssignment {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        // Added Proj 5
+        ((JLhs) lhs).codegenLoadLhsRvalue(output);
+        ((JLhs) lhs).codegenLoadLhsLvalue(output);
+        rhs.codegen(output);
+        output.addNoArgInstruction(IOR);
+        if (!isStatementExpression) { ((JLhs) lhs).codegenDuplicateRvalue(output); }
+        ((JLhs) lhs).codegenStore(output);
     }
 }
 
@@ -303,7 +494,13 @@ class JAndAssignOp extends JAssignment {
      * {@inheritDoc}
      */
     public JExpression analyze(Context context) {
-        // TODO
+        if (!(lhs instanceof JLhs)) {
+            JAST.compilationUnit.reportSemanticError(line(), "illegal lhs AndAssignOp");
+            return this;
+        } else { lhs = (JExpression) ((JLhs) lhs).analyzeLhs(context); }
+        rhs = (JExpression) rhs.analyze(context);
+        rhs.type().mustMatchExpected(line(), Type.INT);
+        type = Type.INT;
         return this;
     }
 
@@ -311,7 +508,13 @@ class JAndAssignOp extends JAssignment {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        // Added Proj 5
+        ((JLhs) lhs).codegenLoadLhsRvalue(output);
+        ((JLhs) lhs).codegenLoadLhsLvalue(output);
+        rhs.codegen(output);
+        output.addNoArgInstruction(IAND);
+        if (!isStatementExpression) { ((JLhs) lhs).codegenDuplicateRvalue(output); }
+        ((JLhs) lhs).codegenStore(output);
     }
 }
 
@@ -334,7 +537,14 @@ class JXorAssignOp extends JAssignment {
      * {@inheritDoc}
      */
     public JExpression analyze(Context context) {
-        // TODO
+        // Added Proj 5
+        if (!(lhs instanceof JLhs)) {
+            JAST.compilationUnit.reportSemanticError(line(), "illegal lhs XorAssignOpt");
+            return this;
+        } else { lhs = (JExpression) ((JLhs) lhs).analyzeLhs(context); }
+        rhs = (JExpression) rhs.analyze(context);
+        rhs.type().mustMatchExpected(line(), Type.INT);
+        type = Type.INT;
         return this;
     }
 
@@ -342,7 +552,12 @@ class JXorAssignOp extends JAssignment {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        ((JLhs) lhs).codegenLoadLhsRvalue(output);
+        ((JLhs) lhs).codegenLoadLhsLvalue(output);
+        rhs.codegen(output);
+        output.addNoArgInstruction(IXOR);
+        if (!isStatementExpression) { ((JLhs) lhs).codegenDuplicateRvalue(output); }
+        ((JLhs) lhs).codegenStore(output);
     }
 }
 
@@ -365,7 +580,14 @@ class JALeftShiftAssignOp extends JAssignment {
      * {@inheritDoc}
      */
     public JExpression analyze(Context context) {
-        // TODO
+        // Added Proj 5
+        if (!(lhs instanceof JLhs)) {
+            JAST.compilationUnit.reportSemanticError(line(), "illegal ALeftShiftAssignOP");
+            return this;
+        } else { lhs = (JExpression) ((JLhs) lhs).analyzeLhs(context); }
+        rhs = (JExpression) rhs.analyze(context);
+        rhs.type().mustMatchExpected(line(), Type.INT);
+        type = Type.INT;
         return this;
     }
 
@@ -373,7 +595,13 @@ class JALeftShiftAssignOp extends JAssignment {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        // Added Proj 5
+        ((JLhs) lhs).codegenLoadLhsRvalue(output);
+        ((JLhs) lhs).codegenLoadLhsLvalue(output);
+        rhs.codegen(output);
+        output.addNoArgInstruction(ISHL);
+        if (!isStatementExpression) { ((JLhs) lhs).codegenDuplicateRvalue(output); }
+        ((JLhs) lhs).codegenStore(output);
     }
 }
 
@@ -396,7 +624,11 @@ class JARightShiftAssignOp extends JAssignment {
      * {@inheritDoc}
      */
     public JExpression analyze(Context context) {
-        // TODO
+        // Added Proj 5
+        rhs = (JExpression) rhs.analyze(context);
+        lhs = (JExpression) ((JLhs) lhs).analyzeLhs(context);
+        rhs.type().mustMatchExpected(line(), Type.INT);
+        type = Type.INT;
         return this;
     }
 
@@ -404,7 +636,13 @@ class JARightShiftAssignOp extends JAssignment {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        // Added Proj 5
+        ((JLhs) lhs).codegenLoadLhsRvalue(output);
+        ((JLhs) lhs).codegenLoadLhsLvalue(output);
+        rhs.codegen(output);
+        output.addNoArgInstruction(ISHR);
+        if (!isStatementExpression) { ((JLhs) lhs).codegenDuplicateRvalue(output); }
+        ((JLhs) lhs).codegenStore(output);
     }
 }
 
@@ -427,7 +665,14 @@ class JLRightShiftAssignOp extends JAssignment {
      * {@inheritDoc}
      */
     public JExpression analyze(Context context) {
-        // TODO
+        // Added Proj 5
+        if (!(lhs instanceof JLhs)) {
+            JAST.compilationUnit.reportSemanticError(line(), "illegal lhs LRightShiftAssignOp");
+            return this;
+        } else { lhs = (JExpression) ((JLhs) lhs).analyzeLhs(context); }
+        rhs = (JExpression) rhs.analyze(context);
+        rhs.type().mustMatchExpected(line(), Type.INT);
+        type = Type.INT;
         return this;
     }
 
@@ -435,6 +680,12 @@ class JLRightShiftAssignOp extends JAssignment {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        // Added Proj 5
+        ((JLhs) lhs).codegenLoadLhsRvalue(output);
+        ((JLhs) lhs).codegenLoadLhsLvalue(output);
+        rhs.codegen(output);
+        output.addNoArgInstruction(IUSHR);
+        if (!isStatementExpression) { ((JLhs) lhs).codegenDuplicateRvalue(output); }
+        ((JLhs) lhs).codegenStore(output);
     }
 }

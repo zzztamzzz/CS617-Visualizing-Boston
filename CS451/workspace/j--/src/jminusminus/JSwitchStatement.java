@@ -6,6 +6,11 @@ import java.util.ArrayList;
 
 import static jminusminus.CLConstants.*;
 
+// Added Proj 5
+import java.util.Comparator;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * The AST node for a switch-statement.
  */
@@ -15,7 +20,6 @@ public class JSwitchStatement extends JStatement {
 
     // List of switch-statement groups.
     private ArrayList<SwitchStatementGroup> stmtGroup;
-
     /**
      * Constructs an AST node for a switch-statement.
      *
