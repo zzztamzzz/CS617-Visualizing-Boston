@@ -22,6 +22,9 @@ class JForStatement extends JStatement {
     // The body.
     private JStatement body;
 
+    // Added Proj 5
+    String breakLabelStr, contLabelStr;
+    boolean hasBreak, hasContinue;
     /**
      * Constructs an AST node for a for-statement.
      *
@@ -44,7 +47,28 @@ class JForStatement extends JStatement {
      * {@inheritDoc}
      */
     public JForStatement analyze(Context context) {
-        // TODO
+        // Added Proj 5
+        JMember.enclosingStatement.push(this);
+
+        if (init != null) {
+            for (JStatement tempStatement : init) {
+                tempStatement.analyze(context);
+            }
+        }
+
+        condition = (condition != null) ? condition.analyze(context) : null;
+        if (condition != null) {
+            condition.type().mustMatchExpected(line(), Type.BOOLEAN);
+        }
+
+        if (update != null) {
+            for (JStatement tempStatement : update) {
+                tempStatement.analyze(context);
+            }
+        }
+
+        body = (JStatement) body.analyze(context);
+
         return this;
     }
 
@@ -52,7 +76,33 @@ class JForStatement extends JStatement {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        // Added Proj 5
+        breakLabelStr = hasBreak ? output.createLabel() : null;
+        contLabelStr = hasContinue ? output.createLabel() : null;
+        String bodyLabel = output.createLabel();
+        String endLabel = output.createLabel();
+
+        if (init != null)
+            for (JStatement statement : init) statement.codegen(output);
+
+        output.addLabel(bodyLabel);
+
+        if (condition != null)
+            condition.codegen(output, endLabel, false);
+
+        body.codegen(output);
+
+        if (hasContinue)
+            output.addLabel(contLabelStr);
+
+        if (update != null)
+            for (JStatement statement : update) statement.codegen(output);
+
+        output.addBranchInstruction(GOTO, bodyLabel);
+        output.addLabel(endLabel);
+
+        if (hasBreak)
+            output.addLabel(breakLabelStr);
     }
 
     /**

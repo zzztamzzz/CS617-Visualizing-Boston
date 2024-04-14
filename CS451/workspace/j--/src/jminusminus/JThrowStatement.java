@@ -26,7 +26,8 @@ class JThrowStatement extends JStatement {
      * {@inheritDoc}
      */
     public JStatement analyze(Context context) {
-        // TODO
+        // Added Proj 5
+        expr = expr.analyze(context);
         return this;
     }
 
@@ -34,7 +35,9 @@ class JThrowStatement extends JStatement {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        // Added Proj 5
+        expr.codegen(output);
+        output.addNoArgInstruction(ATHROW);
     }
 
     /**
