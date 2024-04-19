@@ -1,0 +1,47 @@
+YEAR                              int64
+POSITION_TITLE                   object
+PAY_TOTAL_ACTUAL                float64
+ANNUAL_RATE                     float64
+DEPARTMENT_LOCATION_ZIP_CODE     object
+Job                              object
+dtype: object
+                YEAR POSITION_TITLE  ...  DEPARTMENT_LOCATION_ZIP_CODE      Job
+count   89356.000000          89356  ...                         89356    89356
+unique           NaN            252  ...                             5        2
+top              NaN      Professor  ...                U Mass Amherst  Faculty
+freq             NaN           7589  ...                         32125    87203
+mean     2017.095405            NaN  ...                           NaN      NaN
+std         4.265656            NaN  ...                           NaN      NaN
+min      2010.000000            NaN  ...                           NaN      NaN
+25%      2013.000000            NaN  ...                           NaN      NaN
+50%      2017.000000            NaN  ...                           NaN      NaN
+75%      2021.000000            NaN  ...                           NaN      NaN
+max      2024.000000            NaN  ...                           NaN      NaN
+
+[11 rows x 6 columns]
+
+
+AFTER
+
+
+YEAR                               int64
+POSITION_TITLE                  category
+PAY_TOTAL_ACTUAL                 float64
+ANNUAL_RATE                      float64
+DEPARTMENT_LOCATION_ZIP_CODE    category
+Job                             category
+dtype: object
+                YEAR POSITION_TITLE  ...  DEPARTMENT_LOCATION_ZIP_CODE      Job
+count   89356.000000          89356  ...                         89356    89356
+unique           NaN            252  ...                             5        2
+top              NaN      Professor  ...                U Mass Amherst  Faculty
+freq             NaN           7589  ...                         32125    87203
+mean     2017.095405            NaN  ...                           NaN      NaN
+std         4.265656            NaN  ...                           NaN      NaN
+min      2010.000000            NaN  ...                           NaN      NaN
+25%      2013.000000            NaN  ...                           NaN      NaN
+50%      2017.000000            NaN  ...                           NaN      NaN
+75%      2021.000000            NaN  ...                           NaN      NaN
+max      2024.000000            NaN  ...                           NaN      NaN
+
+[11 rows x 6 columns]

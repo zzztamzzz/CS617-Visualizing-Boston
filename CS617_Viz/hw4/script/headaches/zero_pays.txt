@@ -1,0 +1,14 @@
+       YEAR  ...      Job
+36     2010  ...  Faculty
+88     2010  ...  Faculty
+113    2010  ...  Faculty
+161    2010  ...  Faculty
+170    2010  ...  Faculty
+...     ...  ...      ...
+90117  2024  ...  Faculty
+90222  2024  ...  Faculty
+90228  2024  ...  Faculty
+90261  2024  ...  Faculty
+90494  2024  ...  Faculty
+
+[1222 rows x 6 columns]

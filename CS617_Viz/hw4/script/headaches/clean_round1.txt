@@ -1,0 +1,27 @@
+       YEAR               POSITION_TITLE  ...  DEPARTMENT_LOCATION_ZIP_CODE      Job
+0      2024          Assistant Professor  ...              U Mass Dartmouth  Faculty
+1      2024          Assistant Professor  ...                 U Mass Lowell  Faculty
+2      2024              Lecturer U of M  ...                U Mass Amherst  Faculty
+3      2024         Research Professor A  ...                U Mass Amherst  Faculty
+4      2024  Instructor/Lecturer/Trainer  ...              U Mass Dartmouth  Faculty
+...     ...                          ...  ...                           ...      ...
+90598  2024           Lecturer A, U of M  ...                U Mass Amherst  Faculty
+90599  2024  Instructor/Lecturer/Trainer  ...                 U Mass Lowell  Faculty
+90600  2024              Lecturer U of M  ...                U Mass Amherst  Faculty
+90601  2024     Assistant Athletic Coach  ...                U Mass Amherst    Coach
+90602  2024              Lecturer U of M  ...                U Mass Amherst  Faculty
+
+[90602 rows x 6 columns]                 YEAR POSITION_TITLE  ...  DEPARTMENT_LOCATION_ZIP_CODE      Job
+count   90602.000000          90602  ...                         90602    90602
+unique           NaN            255  ...                             5        2
+top              NaN      Professor  ...                U Mass Amherst  Faculty
+freq             NaN           7683  ...                         32393    88404
+mean     2017.095881            NaN  ...                           NaN      NaN
+std         4.271730            NaN  ...                           NaN      NaN
+min      2010.000000            NaN  ...                           NaN      NaN
+25%      2013.000000            NaN  ...                           NaN      NaN
+50%      2017.000000            NaN  ...                           NaN      NaN
+75%      2021.000000            NaN  ...                           NaN      NaN
+max      2024.000000            NaN  ...                           NaN      NaN
+
+[11 rows x 6 columns]

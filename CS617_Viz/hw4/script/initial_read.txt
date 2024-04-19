@@ -1,0 +1,28 @@
+   Unnamed: 0  YEAR  ... DEPARTMENT_LOCATION_ZIP_CODE      Job
+0      965301  2024  ...             U Mass Dartmouth  Faculty
+1     1001754  2024  ...                U Mass Lowell  Faculty
+2     1019224  2024  ...               U Mass Amherst  Faculty
+3     1229576  2024  ...               U Mass Amherst  Faculty
+4     1263997  2024  ...             U Mass Dartmouth  Faculty
+
+[5 rows x 7 columns] Unnamed: 0                        int64
+YEAR                              int64
+POSITION_TITLE                   object
+PAY_TOTAL_ACTUAL                float64
+ANNUAL_RATE                     float64
+DEPARTMENT_LOCATION_ZIP_CODE     object
+Job                              object
+dtype: object           Unnamed: 0          YEAR  ... DEPARTMENT_LOCATION_ZIP_CODE      Job
+count   9.060300e+04  90603.000000  ...                        90603    90603
+unique           NaN           NaN  ...                            5        2
+top              NaN           NaN  ...               U Mass Amherst  Faculty
+freq             NaN           NaN  ...                        32393    88405
+mean    2.125893e+06   2017.095803  ...                          NaN      NaN
+std     1.224586e+05      4.271772  ...                          NaN      NaN
+min     9.653010e+05   2010.000000  ...                          NaN      NaN
+25%     2.022228e+06   2013.000000  ...                          NaN      NaN
+50%     2.124605e+06   2017.000000  ...                          NaN      NaN
+75%     2.232588e+06   2021.000000  ...                          NaN      NaN
+max     2.335513e+06   2024.000000  ...                          NaN      NaN
+
+[11 rows x 7 columns]

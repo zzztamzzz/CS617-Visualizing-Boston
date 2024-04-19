@@ -1,0 +1,23 @@
+       YEAR                POSITION_TITLE  ...  DEPARTMENT_LOCATION_ZIP_CODE      Job
+5697   2011           Associate Professor  ...              U Mass Dartmouth  Faculty
+6955   2011               Lecturer U of M  ...                U Mass Amherst  Faculty
+11175  2011               Lecturer U of M  ...                U Mass Amherst  Faculty
+21245  2013                     Professor  ...              U Mass Dartmouth  Faculty
+21676  2013                      Lecturer  ...                 U Mass Lowell  Faculty
+26686  2014            Lecturer A, U of M  ...                U Mass Amherst  Faculty
+35098  2015            Associate Lecturer  ...                 U Mass Boston  Faculty
+40815  2016               Lecturer U of M  ...                U Mass Amherst  Faculty
+44595  2017            Part-Time Lecturer  ...              U Mass Dartmouth  Faculty
+47930  2018            Professor A U of M  ...                U Mass Amherst  Faculty
+51783  2018                      Lecturer  ...                 U Mass Boston  Faculty
+53823  2019  Research Associate Professor  ...                U Mass Amherst  Faculty
+54561  2019        Assoc Professor U of M  ...                U Mass Amherst  Faculty
+54941  2019              Professor U of M  ...                U Mass Amherst  Faculty
+61320  2020                Asst Professor  ...              U Mass Worcester  Faculty
+65094  2020                Asst Professor  ...              U Mass Worcester  Faculty
+66611  2021             Professor (Chair)  ...                 U Mass Lowell  Faculty
+66789  2021                     Professor  ...                 U Mass Lowell  Faculty
+68336  2021  Clinical Assistant Professor  ...                U Mass Amherst  Faculty
+69136  2021            Lecturer A, U of M  ...                U Mass Amherst  Faculty
+
+[20 rows x 6 columns]
