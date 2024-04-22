@@ -69,5 +69,13 @@ dfCategorize = dfClean2
 dfCategorize['POSITION_TITLE'] = dfCategorize['POSITION_TITLE'].astype('category')
 dfCategorize['DEPARTMENT_LOCATION_ZIP_CODE'] = dfCategorize['DEPARTMENT_LOCATION_ZIP_CODE'].astype('category')
 dfCategorize['Job'] = dfCategorize['Job'].astype('category')
-print(dfCategorize.dtypes)
-print(dfCategorize.describe(include = 'all'))
+# print(dfCategorize.dtypes)
+# print(dfCategorize.describe(include = 'all'))
+
+'''
+Exporting
+Store cleaned and categorized data into a new csv file.
+'''
+output_fp = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/CvsF_cleaned_categorized.csv'
+dfCategorize.to_csv(output_fp, index = False)
+print("Done export.")

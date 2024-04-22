@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academics Vs Sports - Where Are We Now in the Race of Popularity?</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+        }
+        .chart {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .tooltip {
+            position: absolute;
+            text-align: center;
+            width: 60px;
+            height: 28px;
+            padding: 2px;
+            font: 12px sans-serif;
+            background: lightsteelblue;
+            border: 0px;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Academics Vs Sports</h1>
+    <h2>Where are we now in the Race of Popularity?</h2>
+    <div id="chart" class="chart"></div>
+    
+    <script>
+        // Set the dimensions of the canvas / graph
+        var margin = {top: 30, right: 20, bottom: 30, left: 50},
+            width = 600 - margin.left - margin.right,
+            height = 270 - margin.top - margin.bottom;
+
+        // Parse the date / time
+        var parseDate = d3.timeParse("%Y");
+
+        // Set the ranges
+        var x = d3.scaleTime().range([0, width]);
+        var y = d3.scaleLinear().range([height, 0]);
+
+        // Define the axes
+        var xAxis = d3.axisBottom(x).ticks(5);
+        var yAxis = d3.axisLeft(y).ticks(5);
+
+        // Define the line
+        var valueline = d3.line()
+            .x(function(d) { return x(d.year); })
+            .y(function(d) { return y(d.value); });
+
+        // Adds the svg canvas
+        var svg = d3.select("#chart")
+            .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+                .attr("transform", 
+                      "translate(" + margin.left + "," + margin.top + ")");
+
+        // Get the data
+        d3.csv("CvsF_cleaned_categorized.csv", function(error, data) {
+            if (error) throw error;
+
+            data.forEach(function(d) {
+                d.year = parseDate(d.year);
+                d.value = +d.value;
+            });
+
+            // Scale the range of the data
+            x.domain(d3.extent(data, function(d) { return d.year; }));
+            y.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+            // Add the valueline path.
+            svg.append("path")
+                .data([data])
+                .attr("class", "line")
+                .attr("d", valueline);
+
+            // Add the X Axis
+            svg.append("g")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis);
+
+            // Add the Y Axis
+            svg.append("g")
+                .call(yAxis);
+        });
+    </script>
+</body>
+</html>
