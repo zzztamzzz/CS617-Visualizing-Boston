@@ -62,20 +62,69 @@ annualZeroCheck = dfClean2[dfClean2['ANNUAL_RATE'] == 0]
 
 '''
 Round 3 Categorize
-# Based on the all-inclusive description, we don't really get any stats for non-numerical values
+Based on the all-inclusive description, we don't really get any stats for non-numerical values
 -> Store all non-numerical values as categorical data
+Might come handy later
 '''
-dfCategorize = dfClean2
-dfCategorize['POSITION_TITLE'] = dfCategorize['POSITION_TITLE'].astype('category')
-dfCategorize['DEPARTMENT_LOCATION_ZIP_CODE'] = dfCategorize['DEPARTMENT_LOCATION_ZIP_CODE'].astype('category')
-dfCategorize['Job'] = dfCategorize['Job'].astype('category')
-# print(dfCategorize.dtypes)
-# print(dfCategorize.describe(include = 'all'))
+df_To_categorize = dfClean2
+# df_To_categorize['POSITION_TITLE'] = df_To_categorize['POSITION_TITLE'].astype('category')
+# df_To_categorize['DEPARTMENT_LOCATION_ZIP_CODE'] = df_To_categorize['DEPARTMENT_LOCATION_ZIP_CODE'].astype('category')
+# df_To_categorize['Job'] = df_To_categorize['Job'].astype('category')
+# print(df_To_categorize.dtypes)
+# print(df_To_categorize.describe(include = 'all'))
+
+# Store clean data into a new csv file.
+cleanOut = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/CvsF_cleaned.csv'
+df_To_categorize.to_csv(cleanOut, index = False)
+print("Export done! Cleaned file is ready.")
 
 '''
-Exporting
-Store cleaned and categorized data into a new csv file.
+Organize sum of payroll amounts of each location by year. should be 5 campus locations
+Use pivot table and store organized data in a different csv file
 '''
-output_fp = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/CvsF_cleaned_categorized.csv'
-dfCategorize.to_csv(output_fp, index = False)
-print("Done export.")
+# print(df_To_categorize['DEPARTMENT_LOCATION_ZIP_CODE'].unique())
+
+dfYearSum_per_location = df_To_categorize.pivot_table(index = 'YEAR', columns = 'DEPARTMENT_LOCATION_ZIP_CODE', values = 'PAY_TOTAL_ACTUAL', aggfunc = 'sum')
+# print(dfYearSum_per_location)
+payrollSum_yearly = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Payroll_By_Location.csv'
+dfYearSum_per_location.to_csv(payrollSum_yearly)
+print("File created for sum of payroll[both types] for all locations by the year.")
+
+'''
+Organize by position type
+Extract 'faculty' for academic and 'coach' for sports
+Store in separate files
+'''
+# print(df_To_categorize['POSITION_TITLE'].unique()) # 252 different positions
+# print(df_To_categorize['Job'].unique())
+# dfPositionTitle_per_year = data.pivot_table(index='YEAR', columns='POSITION_TITLE', values='PAY_TOTAL_ACTUAL', aggfunc='sum')
+
+academic_data = df_To_categorize[df_To_categorize['Job'] == 'Faculty']
+sports_data = df_To_categorize[df_To_categorize['Job'] == 'Coach']
+# print(academic_data, sports_data)
+# double check
+# print(academic_data['Job'].unique())
+# print(sports_data['Job'].unique())
+
+# Save the datasets to separate CSV files
+academic_file_path = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Academic_Data.csv'
+academic_data.to_csv(academic_file_path, index=False)
+print("Separated and exported academic positions only.")
+sports_file_path = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Sports_Data.csv'
+sports_data.to_csv(sports_file_path, index=False)
+print("Sports positions are extracted.")
+
+'''
+Creating Payroll sum of each job type by the year for each campus location
+Storing them in separate files
+'''
+academic_yearly_sum = academic_data.groupby(['YEAR', 'DEPARTMENT_LOCATION_ZIP_CODE'])['PAY_TOTAL_ACTUAL'].sum()
+AYS_fp = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Academic_Yearly_Location.csv'
+academic_yearly_sum.to_csv(AYS_fp)
+print("Exported Payroll sum for academic positions for each loaction for the years")
+
+# repeat for sports
+sports_yearly_sum = sports_data.groupby(['YEAR', 'DEPARTMENT_LOCATION_ZIP_CODE'])['PAY_TOTAL_ACTUAL'].sum()
+SYS_fp = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Sports_Yearly_Location.csv'
+sports_yearly_sum.to_csv(SYS_fp)
+print("Sports separated too")

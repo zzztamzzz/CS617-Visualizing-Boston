@@ -3,95 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academics Vs Sports - Where Are We Now in the Race of Popularity?</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <title>Sports vs Academics Popularity</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.0.0/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
+        #map {
+            height: 400px;
         }
-        .chart {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        .tooltip {
-            position: absolute;
-            text-align: center;
-            width: 60px;
-            height: 28px;
-            padding: 2px;
-            font: 12px sans-serif;
-            background: lightsteelblue;
-            border: 0px;
-            border-radius: 8px;
-            pointer-events: none;
+        .chart-container {
+            width: 600px;
+            height: 400px;
         }
     </style>
 </head>
 <body>
-    <h1>Academics Vs Sports</h1>
-    <h2>Where are we now in the Race of Popularity?</h2>
-    <div id="chart" class="chart"></div>
-    
+    <h1>Popularity of Sports vs Academics</h1>
+    <div id="bubbleChart" class="chart-container"></div>
+    <div id="pieChart" class="chart-container"></div>
+    <div id="heatmap" class="chart-container"></div>
+
     <script>
-        // Set the dimensions of the canvas / graph
-        var margin = {top: 30, right: 20, bottom: 30, left: 50},
-            width = 600 - margin.left - margin.right,
-            height = 270 - margin.top - margin.bottom;
-
-        // Parse the date / time
-        var parseDate = d3.timeParse("%Y");
-
-        // Set the ranges
-        var x = d3.scaleTime().range([0, width]);
-        var y = d3.scaleLinear().range([height, 0]);
-
-        // Define the axes
-        var xAxis = d3.axisBottom(x).ticks(5);
-        var yAxis = d3.axisLeft(y).ticks(5);
-
-        // Define the line
-        var valueline = d3.line()
-            .x(function(d) { return x(d.year); })
-            .y(function(d) { return y(d.value); });
-
-        // Adds the svg canvas
-        var svg = d3.select("#chart")
-            .append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-                .attr("transform", 
-                      "translate(" + margin.left + "," + margin.top + ")");
-
-        // Get the data
-        d3.csv("CvsF_cleaned_categorized.csv", function(error, data) {
-            if (error) throw error;
-
-            data.forEach(function(d) {
-                d.year = parseDate(d.year);
-                d.value = +d.value;
+        // Function to draw a bubble chart
+        function drawBubbleChart(data, elementId, title) {
+            const svg = d3.select(elementId)
+                .append('svg')
+                .attr('width', 600)
+                .attr('height', 400);
+    
+            const padding = 50;
+            const maxRadius = d3.max(data, d => d.PAY_TOTAL_ACTUAL) / 100000;
+            const xScale = d3.scaleLinear()
+                .domain([d3.min(data, d => d.YEAR), d3.max(data, d => d.YEAR)])
+                .range([padding, 600 - padding]);
+    
+            const yScale = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d.PAY_TOTAL_ACTUAL)])
+                .range([400 - padding, padding]);
+    
+            const radiusScale = d3.scaleSqrt()
+                .domain([0, d3.max(data, d => d.PAY_TOTAL_ACTUAL)])
+                .range([0, 50]);
+    
+            const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+    
+            svg.selectAll('circle')
+                .data(data)
+                .enter()
+                .append('circle')
+                .attr('cx', d => xScale(d.YEAR))
+                .attr('cy', d => yScale(d.PAY_TOTAL_ACTUAL))
+                .attr('r', d => radiusScale(d.PAY_TOTAL_ACTUAL))
+                .attr('fill', d => colorScale(d.YEAR))
+                .attr('stroke', 'black');
+    
+            // Add title
+            svg.append("text")
+                .attr("x", (600 / 2))             
+                .attr("y", (padding / 2))
+                .attr("text-anchor", "middle")  
+                .style("font-size", "16px") 
+                .style("text-decoration", "underline")  
+                .text(title);
+        }
+    
+        // Load data and draw charts
+        d3.csv('https://drive.google.com/file/d/19HFBAx0srEEash7kxNRQpWYsnkFchE7a/view?usp=drive_link').then(data => {
+            data.forEach(d => {
+                d.PAY_TOTAL_ACTUAL = +d.PAY_TOTAL_ACTUAL;  // Convert to numeric
             });
-
-            // Scale the range of the data
-            x.domain(d3.extent(data, function(d) { return d.year; }));
-            y.domain([0, d3.max(data, function(d) { return d.value; })]);
-
-            // Add the valueline path.
-            svg.append("path")
-                .data([data])
-                .attr("class", "line")
-                .attr("d", valueline);
-
-            // Add the X Axis
-            svg.append("g")
-                .attr("transform", "translate(0," + height + ")")
-                .call(xAxis);
-
-            // Add the Y Axis
-            svg.append("g")
-                .call(yAxis);
+            drawBubbleChart(data, '#bubbleChart', 'Sports Spending by Location and Year');
         });
+    
+        d3.csv('https://drive.google.com/file/d/1xFe9Tn18UdFEEMgKQTYlaJdKJaUheEC0/view?usp=drive_link').then(data => {
+            data.forEach(d => {
+                d.PAY_TOTAL_ACTUAL = +d.PAY_TOTAL_ACTUAL;  // Convert to numeric
+            });
+            drawBubbleChart(data, '#bubbleChart', 'Academic Spending by Location and Year');
+        });
+        // Pie Chart Logic
+        // Heatmap Logic
     </script>
 </body>
 </html>
