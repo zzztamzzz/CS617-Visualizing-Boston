@@ -53,7 +53,7 @@
             height = +svg.attr("height") - margin.top - margin.bottom;
 
         var x = d3.scaleLinear().range([0, width]),
-            y = d3.scaleLinear().range([height, 0]);
+            y = d3.scaleLinear().range([height,  0]);
 
         var line = d3.line()
             .x(function(d) { return x(d.year); })
