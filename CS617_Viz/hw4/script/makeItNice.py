@@ -151,9 +151,11 @@ employment_trends = filter_df_by_year_job.groupby(['YEAR', 'Job']).size().unstac
 filter_fp_YvJ = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Filtered_Only_Year_Job.csv'
 employment_trends.to_csv(filter_fp_YvJ)
 print('We have years and jobs file')
+
 # Get the percentage change, for better viz consumption.
 percentage_change = employment_trends.pct_change(periods=1) * 100
 percentage_rounded = percentage_change.round(3)
+
 # Replace NaN values with 0 (assumes no change from 2010 as starting point)
 percentage_change.iloc[0] = 0
 percentage_rounded.iloc[0] = 0
