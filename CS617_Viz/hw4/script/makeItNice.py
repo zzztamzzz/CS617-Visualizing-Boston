@@ -1,5 +1,11 @@
+'''
+With the help of pandas, we can do so much processing
+In this python script, I have made several changes to the provided csv data file for 'coach_vs_faculty.csv' file
+Details for what was done to the file are provided in comments similar to this one.
+The script generates 7 separate csv file for each of the processing done to the original data file.
+These specific data files are utilized for data for the website visualization
+'''
 import pandas as pd
-
 df = pd.read_csv('/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/raw/coach_vs_faculty.csv')
 
 # # scanning document raw
@@ -86,7 +92,7 @@ Use pivot table and store organized data in a different csv file
 
 dfYearSum_per_location = df_To_categorize.pivot_table(index = 'YEAR', columns = 'DEPARTMENT_LOCATION_ZIP_CODE', values = 'PAY_TOTAL_ACTUAL', aggfunc = 'sum')
 # print(dfYearSum_per_location)
-payrollSum_yearly = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Payroll_By_Location.csv'
+payrollSum_yearly = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Payroll_All_By_Location.csv'
 dfYearSum_per_location.to_csv(payrollSum_yearly)
 print("File created for sum of payroll[both types] for all locations by the year.")
 
@@ -115,16 +121,33 @@ sports_data.to_csv(sports_file_path, index=False)
 print("Sports positions are extracted.")
 
 '''
-Creating Payroll sum of each job type by the year for each campus location
+Creating Payroll sum of each job type by the year for all 5 campus locations
 Storing them in separate files
 '''
-academic_yearly_sum = academic_data.groupby(['YEAR', 'DEPARTMENT_LOCATION_ZIP_CODE'])['PAY_TOTAL_ACTUAL'].sum()
-AYS_fp = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Academic_Yearly_Location.csv'
+# academic_yearly_sum = academic_data.groupby(['YEAR', 'DEPARTMENT_LOCATION_ZIP_CODE'])['PAY_TOTAL_ACTUAL'].sum()
+# AYS_fp = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Academic_GroupedYearly_Location.csv'
+academic_yearly_sum = academic_data.pivot_table(index = 'YEAR', columns = 'DEPARTMENT_LOCATION_ZIP_CODE', values = 'PAY_TOTAL_ACTUAL', aggfunc = 'sum')
+AYS_fp = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Academic_Pivot_Yearly_Location.csv'
 academic_yearly_sum.to_csv(AYS_fp)
-print("Exported Payroll sum for academic positions for each loaction for the years")
+print("Exported Payroll sum for Academic positions for each loaction for the years")
 
 # repeat for sports
-sports_yearly_sum = sports_data.groupby(['YEAR', 'DEPARTMENT_LOCATION_ZIP_CODE'])['PAY_TOTAL_ACTUAL'].sum()
-SYS_fp = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Sports_Yearly_Location.csv'
+# sports_yearly_sum = sports_data.groupby(['YEAR', 'DEPARTMENT_LOCATION_ZIP_CODE'])['PAY_TOTAL_ACTUAL'].sum()
+# SYS_fp = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Sports_GroupedYearly_Location.csv'
+sports_yearly_sum = sports_data.pivot_table(index = 'YEAR', columns = 'DEPARTMENT_LOCATION_ZIP_CODE', values = 'PAY_TOTAL_ACTUAL', aggfunc = 'sum')
+SYS_fp = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Sports_Pivot_Yearly_Location.csv'
 sports_yearly_sum.to_csv(SYS_fp)
-print("Sports separated too")
+print("Sports separated by the year over 5 locations too")
+
+'''
+Extract data related to 'YEAR' and 'Job' from the cleaned data
+Use this data to show change in employment quantity for 'faculty' vs 'coach' jobs
+'''
+# print(df_To_categorize['Job'].value_counts())
+# print(df_To_categorize['YEAR'].value_counts())
+filter_df_by_year_job = df_To_categorize[(df_To_categorize['YEAR'] >= 2010) & (df_To_categorize["YEAR"] <= 2024)]  
+
+employment_trends = filter_df_by_year_job.groupby(['YEAR', 'Job']).size().unstack(fill_value=0)
+filter_fp_YvJ = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Filtered_Only_Year_Job.csv'
+employment_trends.to_csv(filter_fp_YvJ)
+print('We have years and jobs file')

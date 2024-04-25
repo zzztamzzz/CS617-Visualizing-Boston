@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employment Trends</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .line {
+            fill: none;
+            stroke-width: 2px;
+        }
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+        .axis text {
+            font-family: sans-serif;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+<svg width="800" height="500"></svg>
+<script>
+    // Load the data from a CSV file
+    d3.csv("/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/webfile/Filtered_Only_Year_Job.csv").then(function(data) {
+        // Parse the data to ensure variables are the correct type
+        data.forEach(function(d) {
+            d.year = +d.year;  // convert year to numeric
+            d.Faculty = +d.Faculty;  // convert Faculty count to numeric
+            d.Coach = +d.Coach;  // convert Coach count to numeric
+        });
+
+        // Set the dimensions of the canvas / graph
+        const margin = {top: 30, right: 20, bottom: 30, left: 50},
+            width = 800 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
+        // Set the ranges
+        const x = d3.scaleLinear().domain(d3.extent(data, d => d.year)).range([0, width]);
+        const y = d3.scaleLinear().domain([0, d3.max(data, d => Math.max(d.Faculty, d.Coach))]).range([height, 0]);
+
+        // Define the lines
+        const facultyLine = d3.line()
+            .x(d => x(d.year))
+            .y(d => y(d.Faculty))
+            .curve(d3.curveMonotoneX); // this makes the line smooth
+
+        const coachLine = d3.line()
+            .x(d => x(d.year))
+            .y(d => y(d.Coach))
+            .curve(d3.curveMonotoneX); // this makes the line smooth
+
+        // Adds the svg canvas
+        const svg = d3.select("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        // Add the Faculty line path.
+        svg.append("path")
+            .attr("class", "line")
+            .attr("d", facultyLine(data))
+            .attr("stroke", "blue");
+
+        // Add the Coach line path.
+        svg.append("path")
+            .attr("class", "line")
+            .attr("d", coachLine(data))
+            .attr("stroke", "red");
+
+        // Add the X Axis
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x).tickFormat(d3.format("d")));
+
+        // Add the Y Axis
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(d3.axisLeft(y));
+    });
+</script>
+</body>
+</html>

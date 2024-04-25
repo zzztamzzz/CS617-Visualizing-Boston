@@ -69,14 +69,14 @@
         }
     
         // Load data and draw charts
-        d3.csv('https://drive.google.com/file/d/19HFBAx0srEEash7kxNRQpWYsnkFchE7a/view?usp=drive_link').then(data => {
+        d3.csv('bubble_chart/Sports_Yearly_Location.csv').then(data => {
             data.forEach(d => {
                 d.PAY_TOTAL_ACTUAL = +d.PAY_TOTAL_ACTUAL;  // Convert to numeric
             });
             drawBubbleChart(data, '#bubbleChart', 'Sports Spending by Location and Year');
         });
     
-        d3.csv('https://drive.google.com/file/d/1xFe9Tn18UdFEEMgKQTYlaJdKJaUheEC0/view?usp=drive_link').then(data => {
+        d3.csv('bubble_chart/Academic_Yearly_Location.csv').then(data => {
             data.forEach(d => {
                 d.PAY_TOTAL_ACTUAL = +d.PAY_TOTAL_ACTUAL;  // Convert to numeric
             });
