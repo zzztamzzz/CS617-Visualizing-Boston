@@ -24,7 +24,7 @@
     <svg></svg>
     <script>
         // Load the CSV file
-        d3.csv("line/Percentage_Change_Rounded_From_2010.csv").then(function(data) {
+        d3.csv("data/Percentage_Change_Rounded_From_2010.csv").then(function(data) {
             // Convert numeric values from strings to numbers
             data.forEach(function(d) {
                 d.YEAR = +d.YEAR;

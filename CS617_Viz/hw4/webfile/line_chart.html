@@ -25,7 +25,7 @@
 <svg width="800" height="500"></svg>
 <script>
     // Load the data from a CSV file
-    d3.csv("line/Filtered_Only_Year_Job.csv").then(function(data) {
+    d3.csv("data/Filtered_Only_Year_Job.csv").then(function(data) {
         // Parse the data to ensure variables are the correct type
         data.forEach(function(d) {
             d.YEAR = +d.YEAR;  // convert year to numeric

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Line Chart - Employment Trends</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        svg {
+            width: 100%;
+            height: 500px; /* Adjust height as needed */
+            display: block; /* Centers the SVG in the page */
+        }
+        .line-coach {
+            fill: none;
+            stroke: blue;
+            stroke-width: 2;
+        }
+        .line-faculty {
+            fill: none;
+            stroke: green; /* Changed for better contrast */
+            stroke-width: 2;
+            stroke-dasharray: 5,5; /* Dashed line style */
+        }
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: grey;
+            shape-rendering: crispEdges;
+        }
+        .grid .tick {
+            stroke: lightgrey;
+            opacity: 0.7;
+        }
+        .grid path {
+            stroke-width: 0;
+        }
+        .tooltip {
+            position: absolute;
+            text-align: center;
+            width: 60px;
+            height: 28px;
+            padding: 2px;
+            font: 12px sans-serif;
+            background: lightsteelblue;
+            border: 0px;
+            border-radius: 8px;
+            pointer-events: none;
+            opacity: 0;
+        }
+        .dot {
+            fill: steelblue;
+            stroke: none;
+        }
+    </style>
+</head>
+<body>
+    <svg></svg>
+    <div class="tooltip"></div>
+    <script>
+        d3.csv("data/Percentage_Change_Rounded_From_2010.csv").then(function(data) {
+            data.forEach(function(d) {
+                d.YEAR = +d.YEAR;
+                d.Coach = +d.Coach;
+                d.Faculty = +d.Faculty;
+            });
+
+            var svg = d3.select("svg"),
+                margin = {top: 40, right: 20, bottom: 30, left: 50},
+                width = svg.node().getBoundingClientRect().width - margin.left - margin.right,
+                height = 500 - margin.top - margin.bottom,
+                g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            var x = d3.scaleLinear().range([0, width]),
+                y = d3.scaleLinear().range([height, 0]);
+
+            var line = d3.line()
+                .x(function(d) { return x(d.YEAR); })
+                .y(function(d) { return y(d.Coach); });
+
+            var line2 = d3.line()
+                .x(function(d) { return x(d.YEAR); })
+                .y(function(d) { return y(d.Faculty); });
+
+            var yAxisValues = [d3.min(data, function(d) { return Math.min(d.Coach, d.Faculty); }), d3.max(data, function(d) { return Math.max(d.Coach, d.Faculty); })];
+
+            x.domain(d3.extent(data, function(d) { return d.YEAR; }));
+            y.domain(yAxisValues);
+
+            // Adjust y-axis to intersect x-axis at zero
+            var yAxis = d3.axisLeft(y).tickFormat(function(d) {
+                if (d === 0) {
+                    return "0%";
+                }
+                return d3.format("+.0%")(d/100);
+            });
+
+            g.append("g")
+                .attr("class", "y axis")
+                .call(yAxis);
+
+            g.append("g")
+                .attr("transform", "translate(0," + y(0) + ")")
+                .attr("class", "x axis")
+                .call(d3.axisBottom(x).tickFormat(d3.format("d")));
+
+            var totalLength = [line(data).length, line2(data).length];
+
+            var path = g.append("path")
+                .data([data])
+                .attr("class", "line-coach")
+                .attr("d", line)
+                .attr("stroke-dasharray", totalLength[0] + " " + totalLength[0])
+                .attr("stroke-dashoffset", totalLength[0])
+                .transition()
+                .duration(2000)
+                .attr("stroke-dashoffset", 0);
+
+            var path2 = g.append("path")
+                .data([data])
+                .attr("class", "line-faculty")
+                .attr("d", line2)
+                .attr("stroke-dasharray", totalLength[1] + " " + totalLength[1])
+                .attr("stroke-dashoffset", totalLength[1])
+                .transition()
+                .duration(2000)
+                .attr("stroke-dashoffset", 0);
+
+            // Tooltips and dots
+            var tooltip = d3.select(".tooltip");
+
+            function onMouseOver(d, i) {
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                tooltip.html("Year: " + i.YEAR + "<br/>" + "Value: " + i.Coach)
+                    .style("left", (d.clientX + 5) + "px")
+                    .style("top", (d.clientY - 28) + "px");
+            }
+
+            function onMouseOut(d, i) {
+                tooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            }
+
+            g.selectAll(".dot")
+                .data(data)
+                .enter().append("circle")
+                .attr("class", "dot")
+                .attr("cx", function(d) { return x(d.YEAR); })
+                .attr("cy", function(d) { return y(d.Coach); })
+                .attr("r", 0)
+                .on("mouseover", onMouseOver)
+                .on("mouseout", onMouseOut)
+                .transition()
+                .delay(function(d, i) { return 2000 + i * 100; }) // starts appearing after the line finishes drawing
+                .duration(500)
+                .attr("r", 5);
+
+            svg.append("text")
+                .attr("x", (width / 2))
+                .attr("y", (margin.top / 2))
+                .attr("text-anchor", "middle")
+                .style("font-size", "16px")
+                .text("Percentage change in employment for Academic vs Sports Jobs");
+        });
+    </script>
+</body>
+</html>
