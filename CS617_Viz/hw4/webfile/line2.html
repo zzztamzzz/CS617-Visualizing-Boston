@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Line Chart - Employment Trends</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        svg {
+            width: 800px;
+            height: 500px;
+        }
+        .line-coach {
+            fill: none;
+            stroke: blue;
+            stroke-width: 2;
+        }
+        .line-faculty {
+            fill: none;
+            stroke: red;
+            stroke-width: 2;
+        }
+    </style>
+</head>
+<body>
+    <svg></svg>
+    <script>
+        // Load the CSV file
+        d3.csv("line/Percentage_Change_Rounded_From_2010.csv").then(function(data) {
+            // Convert numeric values from strings to numbers
+            data.forEach(function(d) {
+                d.YEAR = +d.YEAR;
+                d.Coach = +d.Coach;
+                d.Faculty = +d.Faculty;
+            });
+
+            // Set the dimensions of the canvas
+            var svg = d3.select("svg"),
+                margin = {top: 40, right: 20, bottom: 30, left: 50},
+                width = svg.attr("width") - margin.left - margin.right,
+                height = svg.attr("height") - margin.top - margin.bottom,
+                g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            // Set the ranges
+            var x = d3.scaleLinear().range([0, width]),
+                y = d3.scaleLinear().range([height, 0]);
+
+            // Define the line
+            var line = d3.line()
+                .x(function(d) { return x(d.YEAR); })
+                .y(function(d) { return y(d.Coach); });
+
+            var line2 = d3.line()
+                .x(function(d) { return x(d.YEAR); })
+                .y(function(d) { return y(d.Faculty); });
+
+            // Scale the range of the data
+            x.domain(d3.extent(data, function(d) { return d.YEAR; }));
+            y.domain([
+                d3.min(data, function(d) { return Math.min(d.Coach, d.Faculty); }),
+                d3.max(data, function(d) { return Math.max(d.Coach, d.Faculty); })
+            ]);
+
+            // Add the X Axis
+            g.append("g")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x).tickFormat(d3.format("d")));
+
+            // Add the Y Axis
+            g.append("g")
+                .call(d3.axisLeft(y));
+
+            // Add the Coach line path.
+            g.append("path")
+                .data([data])
+                .attr("class", "line-coach")
+                .attr("d", line);
+
+            // Add the Faculty line path.
+            g.append("path")
+                .data([data])
+                .attr("class", "line-faculty")
+                .attr("d", line2);
+
+            // Title
+            svg.append("text")
+                .attr("x", (width / 2))             
+                .attr("y", (margin.top / 2))
+                .attr("text-anchor", "middle")  
+                .style("font-size", "16px") 
+                .text("Percentage change in employment for Academic vs Sports Jobs");
+        });
+    </script>
+</body>
+</html>

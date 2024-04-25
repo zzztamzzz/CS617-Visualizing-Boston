@@ -25,10 +25,10 @@
 <svg width="800" height="500"></svg>
 <script>
     // Load the data from a CSV file
-    d3.csv("/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/webfile/Filtered_Only_Year_Job.csv").then(function(data) {
+    d3.csv("line/Filtered_Only_Year_Job.csv").then(function(data) {
         // Parse the data to ensure variables are the correct type
         data.forEach(function(d) {
-            d.year = +d.year;  // convert year to numeric
+            d.YEAR = +d.YEAR;  // convert year to numeric
             d.Faculty = +d.Faculty;  // convert Faculty count to numeric
             d.Coach = +d.Coach;  // convert Coach count to numeric
         });
@@ -39,17 +39,17 @@
             height = 500 - margin.top - margin.bottom;
 
         // Set the ranges
-        const x = d3.scaleLinear().domain(d3.extent(data, d => d.year)).range([0, width]);
+        const x = d3.scaleLinear().domain(d3.extent(data, d => d.YEAR)).range([0, width]);
         const y = d3.scaleLinear().domain([0, d3.max(data, d => Math.max(d.Faculty, d.Coach))]).range([height, 0]);
 
         // Define the lines
         const facultyLine = d3.line()
-            .x(d => x(d.year))
+            .x(d => x(d.YEAR))
             .y(d => y(d.Faculty))
             .curve(d3.curveMonotoneX); // this makes the line smooth
 
         const coachLine = d3.line()
-            .x(d => x(d.year))
+            .x(d => x(d.YEAR))
             .y(d => y(d.Coach))
             .curve(d3.curveMonotoneX); // this makes the line smooth
 

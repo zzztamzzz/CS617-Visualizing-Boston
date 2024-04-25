@@ -1,0 +1,35 @@
+.
+├── some_links.md
+├── script
+│   ├── initial_read.txt
+│   ├── makeItNice.py
+│   └── headaches
+│       ├── negative_pays.txt
+│       ├── zero_Annuals.txt
+│       ├── clean_round2.txt
+│       ├── zero_pays.txt
+│       ├── clean_round1.txt
+│       └── clean_round3_categorize.txt
+├── data
+│   ├── processed
+│   │   ├── CvsF_cleaned.csv
+│   │   ├── Academic_Pivot_Yearly_Location.csv
+│   │   ├── Filtered_Only_Year_Job.csv
+│   │   ├── Sports_Data.csv
+│   │   ├── Sports_Pivot_Yearly_Location.csv
+│   │   ├── Academic_Data.csv
+│   │   └── Payroll_All_By_Location.csv
+│   └── raw
+│       ├── coach_vs_faculty.csv
+│       └── combined_with_departments.csv
+├── types
+│   ├── line
+│   │   └── Filtered_Only_Year_Job.csv
+│   └── pie
+│       ├── Academic_Pivot_Yearly_Location.csv
+│       ├── Payroll_All_By_Location.csv
+│       └── Sports_Pivot_Yearly_Location.csv
+└── webfile
+    ├── line_chart.html
+    ├── pie_only.html
+    └── draft1.html
