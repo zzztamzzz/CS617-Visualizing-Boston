@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pie Charts Visualization</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div id="charts-container">
+        <!-- Pie charts will be appended here dynamically -->
+    </div>
+    <div id="legend-container">
+        <!-- Common legend will be placed here -->
+    </div>
+    <div class="slider-container">
+        <input type="range" id="year-slider" min="2010" max="2024" value="2010" step="1">
+        <label for="year-slider" id="year-display">Year: 2010</label>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+        text-align: center;
+        padding: 20px;
+    }
+    .slider-container {
+    width: 80%;
+    margin: 20px auto;
+    padding: 10px;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+    #year-slider {
+        width: 100%;
+        height: 25px;
+        background: #ddd;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+    }
+    #year-slider:hover {
+        opacity: 1;
+    }
+    #charts-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        margin-top: 20px;
+    }
+    .pie {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 300px; /* Increased from 220px */
+    height: 300px; /* Increased from 220px */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+svg {
+    width: 240px; /* Adjusted width for SVG */
+    height: 240px; /* Adjusted height for SVG */
+}
+.pie-title {
+    font-size: 16px;
+    text-align: center;
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 10px; /* Adjusted spacing */
+}
+.tooltip {
+    position: absolute;
+    text-align: center;
+    width: 120px;
+    padding: 8px;
+    font-size: 14px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+#legend-container {
+    text-align: center;
+    margin-top: 20px;
+}
+.legend-item {
+    display: inline-block;
+    margin: 0 10px;
+    align-items: center;
+}
+.legend-color {
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+
+</style>
+<script>
+    d3.csv("data/Percentage_Spending_by_Type_and_Location.csv").then(data => {
+        const tooltip = d3.select("body").append("div")
+            .attr("class", "tooltip");
+
+        // Initialize the common legend
+        const legendContainer = d3.select("#legend-container");
+        legendContainer.append("div").attr("class", "legend-item").html(`
+            <div class="legend-color" style="background-color: #4CAF50;"></div>Academic
+        `);
+        legendContainer.append("div").attr("class", "legend-item").html(`
+            <div class="legend-color" style="background-color: #FFC107;"></div>Sports
+        `);
+
+        const updateCharts = (year) => {
+            const filteredData = data.filter(d => d.Year == year);
+            const pies = d3.select("#charts-container").selectAll(".pie")
+                .data(filteredData, d => d.Location);
+
+            pies.exit().remove();
+
+            const piesEnter = pies.enter().append("div")
+                .attr("class", "pie");
+
+            const pie = piesEnter.merge(pies);
+            pie.html(""); // Clear previous SVGs and labels
+
+            pie.each(function(d) {
+                const pieData = [parseFloat(d.Academic), parseFloat(d.Sports)];
+                const locationName = d.Location; // Get the location name for the label
+
+                // Add a title with the location name
+                d3.select(this).append("div")
+                    .attr("class", "pie-title")
+                    .text(locationName);
+
+                const svg = d3.select(this).append("svg")
+                    .attr("width", "100%")
+                    .attr("height", "100%")
+                    .append("g")
+                    .attr("transform", "translate(120, 120)");
+
+                const arcGenerator = d3.arc().innerRadius(50).outerRadius(110);
+                const pieGenerator = d3.pie();
+
+                const arcs = svg.selectAll(".arc")
+                    .data(pieGenerator(pieData))
+                    .enter().append("path")
+                    .attr("class", "arc")
+                    .attr("d", arcGenerator)
+                    .attr("fill", (d, i) => i === 0 ? "#4CAF50" : "#FFC107");
+
+                arcs.on("mouseover", function(event, d) {
+                    tooltip.style("opacity", 1);
+                    tooltip.html(`Value: ${d.value.toFixed(2)}%`)
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY + 10) + "px");
+                });
+
+                arcs.on("mouseout", function() {
+                    tooltip.style("opacity", 0);
+                });
+            });
+        };
+
+        updateCharts(2010);
+        d3.select("#year-slider").on("input", function() {
+            const year = this.value;
+            document.getElementById("year-display").textContent = 'Year: ' + year;
+            updateCharts(year);
+        });
+    });
+</script>

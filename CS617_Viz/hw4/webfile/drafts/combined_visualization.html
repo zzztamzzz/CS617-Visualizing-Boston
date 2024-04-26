@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><title>Combined Visualization</title><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet"/><script src="https://d3js.org/d3.v7.min.js"></script></head><body><body>
+<!-- Container for the SVG and tooltip -->
+<div style="position: relative;">
+<svg height="600" width="800"></svg>
+<div class="tooltip"></div>
+</div>
+<!-- JavaScript for creating the line chart -->
+<script>
+        // Select the SVG container and define dimensions and margins
+        const svg = d3.select("svg"),
+            margin = { top: 40, right: 20, bottom: 80, left: 80 },
+            width = +svg.attr("width") - margin.left - margin.right,
+            height = +svg.attr("height") - margin.top - margin.bottom,
+            g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        // Tooltip for displaying data details
+        const tooltip = d3.select(".tooltip");
+
+        // Define the x and y scales
+        const x = d3.scaleLinear().rangeRound([0, width]);
+        let y = d3.scaleLinear().rangeRound([height, 0]);
+
+        // Line generator for the line chart
+        const line = d3.line()
+            .x(function(d) { return x(d.YEAR); })
+            .y(function(d) { return y(d.value); });
+
+        // Load and process CSV data
+        d3.csv("data/Percentage_Change_Rounded_From_2010.csv").then(function(data) {
+            data.forEach(function(d) {
+                d.YEAR = +d.YEAR;
+                d.Coach = +d.Coach;
+                d.Faculty = +d.Faculty;
+            });
+
+            // Set domains for the axes
+            x.domain(d3.extent(data, function(d) { return d.YEAR; }));
+            y.domain([-50, 50]);
+
+            // Append and configure the x-axis
+            g.append("g")
+            .attr("transform", "translate(0," + y(0) + ")")
+            .call(d3.axisBottom(x))
+            .append("text")
+            .attr("fill", "#000")
+            .attr("x", width / 2)
+            .attr("y", 250)
+            .attr("text-anchor", "middle")
+            .text("Years");
+
+            // Append and configure the y-axis
+            g.append("g")
+            .call(d3.axisLeft(y))
+            .append("text")
+            .attr("fill", "#000")
+            .attr("x", -70)
+            .attr("y", 230)
+            .attr("text-anchor", "start")
+            .html("Percentage<tspan x='-65' dy='1.2em'> Change<tspan x='-61' dy='1.2em'>In Jobs</tspan>");
+
+            // Chart title
+            svg.append("text")
+                .attr("x", (width / 2) + margin.left)
+                .attr("y", margin.top / 2)
+                .attr("text-anchor", "middle")
+                .style("font-size", "20px")
+                .text("Percentage Change in staff employment for Academics and Sports");
+
+            // Create a color legend for the line chart
+            const colors = { Coach: "steelblue", Faculty: "red" };
+            let legend = svg.append("g")
+                .attr("font-family", "sans-serif")
+                .attr("font-size", 10)
+                .attr("text-anchor", "end")
+                .selectAll("g")
+                .data(Object.keys(colors))
+                .enter().append("g")
+                .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 40) + ")"; });
+
+            legend.append("rect")
+                .attr("x", width - 20)
+                .attr("width", 18)
+                .attr("height", 18)
+                .attr("fill", d => colors[d]);
+
+            legend.append("text")
+                .attr("x", width - 24)
+                .attr("y", 9.5)
+                .attr("dy", "0.32em")
+                .text(d => d);
+
+            // Plot lines and points for each category
+            ["Coach", "Faculty"].forEach(function(type) {
+                const dataset = data.map(d => ({YEAR: d.YEAR, value: d[type]}));
+
+                let path = g.append("path")
+                    .datum(dataset)
+                    .attr("fill", "none")
+                    .attr("stroke", colors[type])
+                    .attr("stroke-linejoin", "round")
+                    .attr("stroke-linecap", "round")
+                    .attr("stroke-width", 1.5)
+                    .attr("d", line)
+                    .attr("stroke-dasharray", function() {
+                        const length = this.getTotalLength();
+                        return `${length} ${length}`;
+                    })
+                    .attr("stroke-dashoffset", function() {
+                        return this.getTotalLength();
+                    });
+                    // Animate the line drawing
+                    path.transition()
+                .duration(2000)
+                .attr("stroke-dashoffset", 0)
+                .on("end", function() {
+                    // Handle events for the tooltip
+                    g.selectAll(".dot-" + type)
+                        .data(dataset)
+                        .enter().append("circle")
+                        .attr("class", "dot-" + type)
+                        .attr("cx", d => x(d.YEAR))
+                        .attr("cy", d => y(d.value))
+                        .attr("r", 0)
+                        .attr("fill", colors[type])
+                        .transition()
+                        .duration(500)
+                        .attr("r", 3.5);
+
+                    g.selectAll(".dot-" + type)
+                        .on("mouseover", function(event, d) {
+                            d3.select(this)
+                                .transition()
+                                .duration(100)
+                                .attr("r", 7);
+
+                            let tooltipText = `Year: ${d.YEAR}<br/>${type}: ${d.value}%`;
+                            tooltip.html(tooltipText)
+                                .style("opacity", 0.9)
+                                .style("left", (event.pageX - svg.node().getBoundingClientRect().left + 10) + "px")
+                                .style("top", (event.pageY - svg.node().getBoundingClientRect().top - 10) + "px");
+                        })
+                        .on("mouseout", function() {
+                            d3.select(this)
+                                .transition()
+                                .duration(100)
+                                .attr("r", 3.5);
+                            tooltip.transition()
+                                .duration(500)
+                                .style("opacity", 0);
+                        });
+                });
+            });
+        });
+    </script>
+</body><body>
+<div id="charts-container">
+<!-- Pie charts will be appended here dynamically -->
+</div>
+<div id="legend-container">
+<!-- Common legend will be placed here -->
+</div>
+<div class="slider-container">
+<input id="year-slider" max="2024" min="2010" step="1" type="range" value="2010"/>
+<label for="year-slider" id="year-display">Year: 2010</label>
+</div>
+<script src="script.js"></script>
+</body></body></html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Half-Hearted Story Visualization Attempt</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <script src="https://d3js.org/d3.v6.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f9;
+            color: #333;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-weight: bolder;
+            padding-top: 40px;
+        }
+        #charts-container, .slider-container, .tooltip, svg {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        #charts-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .slider-container, svg, .tooltip {
+            background: #fff;
+            border-radius: 8px;
+        }
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+        .tooltip {
+            position: absolute;
+            text-align: center;
+            width: 140px;
+            height: 40px;
+            padding: 5px;
+            font-size: 14px;
+            border: 1px solid #dddddd;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .slider-container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 10px;
+        }
+        #year-slider {
+            width: 100%;
+            height: 25px;
+            background: #ddd;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity .2s;
+        }
+        #year-slider:hover {
+            opacity: 1;
+        }
+        .pie {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            overflow: hidden;
+            width: 300px; 
+            height: 300px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #legend-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .legend-item {
+            display: inline-block;
+            margin: 0 10px;
+            align-items: center;
+        }
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            display: inline-block;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        .axis-label {
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Container for the SVG and tooltip -->
+    <div style="position: relative;">
+        <svg id="line-chart-svg" width="1500" height="600"></svg>
+        <div class="tooltip"></div>
+    </div>
+    
+    <!-- Line chart script -->
+    <script>
+        // D3.js script for creating line chart
+        const svg = d3.select("svg"),
+            margin = { top: 40, right: 20, bottom: 80, left: 80 },
+            width = +svg.attr("width") - margin.left - margin.right,
+            height = +svg.attr("height") - margin.top - margin.bottom,
+            g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+        const tooltip = d3.select(".tooltip"),
+            x = d3.scaleLinear().rangeRound([0, width]),
+            y = d3.scaleLinear().rangeRound([height, 0]),
+            line = d3.line()
+                .x(d => x(d.YEAR))
+                .y(d => y(d.value));
+            // Load data file
+        d3.csv("data/Percentage_Change_Rounded_From_2010.csv").then(data => {
+            data.forEach(d => {
+                d.YEAR = +d.YEAR;
+                d.Coach = +d.Coach;
+                d.Faculty = +d.Faculty;
+            });
+            // Setup x and y axes
+            x.domain(d3.extent(data, d => d.YEAR));
+            y.domain([-50, 50]);
+            // x-axis label
+            g.append("g")
+                .attr("transform", `translate(0,${y(0)})`)
+                .call(d3.axisBottom(x))
+                .append("text")
+                .attr("fill", "#000")
+                .attr("x", width / 2)
+                .attr("y", 150)
+                .attr("text-anchor", "middle")
+                .text("Years");
+                // y-axis label
+            g.append("g")
+                .call(d3.axisLeft(y))
+                .append("text")
+                .attr("fill", "#000")
+                .attr("x", -70)
+                .attr("y", 230)
+                .attr("text-anchor", "start")
+                .html("<tspan x='-70' dy='0.5em'>Percentage<tspan x='-65' dy='1.5em'> Change<tspan x='-61' dy='1.5em'></tspan>");
+                // Title text
+            svg.append("text")
+                .attr("x", (width / 2) + margin.left)
+                .attr("y", margin.top / 2)
+                .attr("text-anchor", "middle")
+                .style("font-size", "20px")
+                .text("Percentage Change in staff for Academics and Sports since 2010");
+                // Create a color legend for the line chart
+            const colors = { Coach: "steelblue", Faculty: "red" };
+            let legend = svg.append("g")
+                .attr("font-family", "sans-serif")
+                .attr("font-size", 10)
+                .attr("text-anchor", "end")
+                .selectAll("g")
+                .data(Object.keys(colors))
+                .enter().append("g")
+                .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 40) + ")"; });
+                // Legend color boxes and labels
+            legend.append("rect")
+                .attr("x", width - 20)
+                .attr("width", 18)
+                .attr("height", 18)
+                .attr("fill", d => colors[d]);
+            legend.append("text")
+                .attr("x", width - 24)
+                .attr("y", 9.5)
+                .attr("dy", "0.32em")
+                .text(d => d);
+
+            // Plot lines and points for each category
+            ["Coach", "Faculty"].forEach(function(type) {
+                const dataset = data.map(d => ({YEAR: d.YEAR, value: d[type]}));
+                let path = g.append("path")
+                    .datum(dataset)
+                    .attr("fill", "none")
+                    .attr("stroke", colors[type])
+                    .attr("stroke-linejoin", "round")
+                    .attr("stroke-linecap", "round")
+                    .attr("stroke-width", 1.5)
+                    .attr("d", line)
+                    .attr("stroke-dasharray", function() {
+                        const length = this.getTotalLength();
+                        return `${length} ${length}`;
+                    })
+                    .attr("stroke-dashoffset", function() {
+                        return this.getTotalLength();
+                    });
+                    path.transition()
+                .duration(2000)
+                .attr("stroke-dashoffset", 0)
+                .on("end", function() {
+                    // Tooltip events
+                    g.selectAll(".dot-" + type)
+                        .data(dataset)
+                        .enter().append("circle")
+                        .attr("class", "dot-" + type)
+                        .attr("cx", d => x(d.YEAR))
+                        .attr("cy", d => y(d.value))
+                        .attr("r", 0)
+                        .attr("fill", colors[type])
+                        .transition()
+                        .duration(500)
+                        .attr("r", 3.5);
+
+                    g.selectAll(".dot-" + type)
+                        .on("mouseover", function(event, d) {
+                            d3.select(this)
+                                .transition()
+                                .duration(100)
+                                .attr("r", 7);
+
+                            let tooltipText = `Year: ${d.YEAR}<br/>${type}: ${d.value}%`;
+                            tooltip.html(tooltipText)
+                                .style("opacity", 0.9)
+                                .style("left", (event.pageX - svg.node().getBoundingClientRect().left + 10) + "px")
+                                .style("top", (event.pageY - svg.node().getBoundingClientRect().top - 10) + "px");
+                        })
+                        .on("mouseout", function() {
+                            d3.select(this)
+                                .transition()
+                                .duration(100)
+                                .attr("r", 3.5);
+                            tooltip.transition()
+                                .duration(500)
+                                .style("opacity", 0);
+                        });
+                });
+            });
+        });
+    </script>
+
+    <!-- Middle label (between line chart and the pie charts) -->
+    <div id="middle-label" style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
+        <h3>Percentage of Payroll for Academics Vs Sports for 5 campus locations</h3>
+    </div>
+
+    <!-- Container related to pie charts -->
+    <div id="charts-container"></div>
+    <!-- Legend container -->
+    <div id="legend-container"></div>
+    <!-- Slider container -->
+    <div class="slider-container">
+        <input type="range" id="year-slider" min="2010" max="2024" value="2010" step="1">
+        <label for="year-slider" id="year-display">Year: 2010</label>
+    </div>
+
+    <!-- Pie chart script -->
+    <script>
+        d3.csv("data/Percentage_Spending_by_Type_and_Location.csv").then(data => {
+        const tooltip = d3.select("body").append("div")
+            .attr("class", "tooltip");
+            // Common legend
+        const legendContainer = d3.select("#legend-container");
+        legendContainer.append("div").attr("class", "legend-item").html(`
+            <div class="legend-color" style="background-color: #4CAF50;"></div>Academic`);
+        legendContainer.append("div").attr("class", "legend-item").html(`
+            <div class="legend-color" style="background-color: #FFC107;"></div>Sports
+        `);
+        // Change pies for the year
+        const updateCharts = (year) => {
+                const filteredData = data.filter(d => d.Year == year);
+                const pies = d3.select("#charts-container").selectAll(".pie")
+                    .data(filteredData, d => d.Location);
+                pies.exit().remove();
+                const piesEnter = pies.enter().append("div")
+                    .attr("class", "pie");
+                    const pie = piesEnter.merge(pies);
+                pie.html(""); // Clear previous SVGs and labels
+
+            pie.each(function(d) {
+                // From the csv data file, get the location for each pie chart title
+                const locationName = d.Location; 
+                d3.select(this).append("div")
+                    .attr("class", "pie-title")
+                    .text(locationName);
+                // Space to draw the pies
+                const svgWidth = 300; 
+                const svgHeight = 300;
+
+                const svg = d3.select(this).append("svg")
+                    .attr("width", "100vw")
+                    .attr("height", "100vh")
+                    .append("g")
+                    .attr("transform", `translate(${svgWidth / 2}, ${svgHeight / 2})`); // Center the group
+
+                // Pie chart properties
+                const arcGenerator = d3.arc().innerRadius(60).outerRadius(120);
+                const pieGenerator = d3.pie();
+
+                const arcs = svg.selectAll(".arc")
+                    .data(pieGenerator([parseFloat(d.Academic), parseFloat(d.Sports)]))
+                    .enter().append("path")
+                    .attr("class", "arc")
+                    .attr("d", arcGenerator)
+                    .attr("fill", (d, i) => i === 0 ? "#4CAF50" : "#FFC107");
+
+                // Hover for information
+                arcs.on("mouseover", function(event, d) {
+                    tooltip.style("opacity", 1);
+                    tooltip.html(`Value: ${d.value.toFixed(2)}%`)
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY + 10) + "px");
+                });
+
+                arcs.on("mouseout", function() {
+                    tooltip.style("opacity", 0);
+                });
+            });
+        };
+        // Initialize pie chart from 2010
+        updateCharts(2010);
+        d3.select("#year-slider").on("input", function() {
+            const year = this.value;
+            document.getElementById("year-display").textContent = 'Year: ' + year;
+            updateCharts(year);
+        });
+    });
+    </script>
+</body>
+</html>

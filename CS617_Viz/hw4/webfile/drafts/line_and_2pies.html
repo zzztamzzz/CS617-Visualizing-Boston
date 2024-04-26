@@ -11,17 +11,15 @@
             font-family: Arial, sans-serif;
             font-weight: bolder;
             background: #f4f4f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
+            padding: 20px;
             color: #333;
         }
         svg {
             background: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin: 20px;
         }
         .tooltip {
             position: absolute;
@@ -37,16 +35,65 @@
             opacity: 0;
             transition: opacity 0.3s;
         }
+        #charts-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #pieCharts-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+        }
+        #slider-container {
+            width: 80%;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .pieChart {
+        position: relative;
+        }
+
+        .title {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            font-size: 16px;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
-    <!-- Container for the SVG and tooltip -->
-    <div style="position: relative;">
+    <div id="charts-container">
+        <!-- Line chart -->
         <svg width="800" height="600"></svg>
         <div class="tooltip"></div>
+
+        <!-- Pie charts -->
+        <div id="pieCharts-container">
+            <div class="pieChart">
+                <svg id="pieChart1" width="400" height="450"></svg> 
+                <div class="title"></div>
+            </div>
+            <div class="pieChart">
+                <svg id="pieChart2" width="400" height="450"></svg>
+                <div class="title"></div>
+            </div>
+        </div>
+
+        <!-- Slider for selecting year -->
+        <!-- Slider for selecting year -->
+<div id="slider-container">
+    <label for="yearSlider">Use this slider to change to year reflected in the pie charts:</label>
+    <input type="range" id="yearSlider" min="2010" max="2024" value="2010" step="1">
+    <p>Selected Year: <span id="selectedYear">2010</span></p>
+</div>
+
     </div>
-    
-    <!-- JavaScript for creating the line chart -->
+
+    <!-- JavaScript for creating the line chart and pie charts -->
     <script>
         // Select the SVG container and define dimensions and margins
         const svg = d3.select("svg"),
@@ -54,7 +101,7 @@
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
             g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
+        
         // Tooltip for displaying data details
         const tooltip = d3.select(".tooltip");
 
@@ -67,7 +114,7 @@
             .x(function(d) { return x(d.YEAR); })
             .y(function(d) { return y(d.value); });
 
-        // Load and process CSV data
+        // Data processing for the line chart
         d3.csv("data/Percentage_Change_Rounded_From_2010.csv").then(function(data) {
             data.forEach(function(d) {
                 d.YEAR = +d.YEAR;
@@ -193,6 +240,89 @@
                 });
             });
         });
+
+        // Data processing for the pie charts
+        function drawPieChart(svgId, data, title) {
+    // Clear the existing pie chart
+    const svg = d3.select(svgId);
+    svg.selectAll("*").remove();
+
+    const width = +svg.attr("width"),
+        height = +svg.attr("height"),
+        radius = Math.min(width, height) / 2,
+        g = svg.append("g").attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+    const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+    const pie = d3.pie()
+        .sort(null)
+        .value(d => d.value);
+
+    const path = d3.arc()
+        .outerRadius(radius - 10)
+        .innerRadius(0);
+
+    const label = d3.arc()
+        .outerRadius(radius - 40)
+        .innerRadius(radius - 40);
+
+    const arc = g.selectAll(".arc")
+        .data(pie(data))
+        .enter().append("g")
+        .attr("class", "arc");
+
+    arc.append("path")
+        .attr("d", path)
+        .attr("fill", d => color(d.data.label));
+
+    arc.append("text")
+        .attr("transform", d => `translate(${label.centroid(d)})`)
+        .text(d => d.data.label)
+        .style("fill", "#fff")
+        .style("font-size", "10px");
+
+    // Add title to the pie chart
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", 20)
+        .attr("text-anchor", "middle")
+        .style("font-size", "20px")
+        .text(title);
+}
+
+
+function updateCharts(year) {
+    d3.csv("data/Academic_Pivot_Yearly_Location.csv").then(academicData => {
+        const thistitle = "Spendings for Academics";
+        const data = academicData.find(d => d.YEAR === year);
+        const formattedData = Object.keys(data).filter(key => key !== 'YEAR').map(key => ({
+            label: key,
+            value: +data[key]
+        }));
+        drawPieChart("#pieChart1", formattedData, thistitle);
+    });
+
+    d3.csv("data/Sports_Pivot_Yearly_Location.csv").then(sportsData => {
+        const thistitle = "Spendings for Sports";
+        const data = sportsData.find(d => d.YEAR === year);
+        const formattedData = Object.keys(data).filter(key => key !== 'YEAR').map(key => ({
+            label: key,
+            value: +data[key]
+        }));
+        drawPieChart("#pieChart2", formattedData, thistitle);
+    });
+}
+
+
+        document.getElementById('yearSlider').addEventListener('input', function() {
+            const year = this.value;
+            document.getElementById('selectedYear').textContent = year;
+            updateCharts(year);
+        });
+
+        // Initial call to load charts
+        updateCharts("2010");
+
     </script>
 </body>
 </html>

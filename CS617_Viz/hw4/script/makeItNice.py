@@ -6,6 +6,7 @@ The script generates 7 separate csv file for each of the processing done to the 
 These specific data files are utilized for data for the website visualization
 '''
 import pandas as pd
+import numpy as np
 df = pd.read_csv('/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/raw/coach_vs_faculty.csv')
 
 # # scanning document raw
@@ -80,8 +81,8 @@ df_To_categorize = dfClean2
 # print(df_To_categorize.describe(include = 'all'))
 
 # Store clean data into a new csv file.
-cleanOut = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/CvsF_cleaned.csv'
-df_To_categorize.to_csv(cleanOut, index = False)
+cleanedData_fp = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/CvsF_cleaned.csv'
+df_To_categorize.to_csv(cleanedData_fp, index = False)
 print("Export done! Cleaned file is ready.")
 
 '''
@@ -107,7 +108,6 @@ Store in separate files
 
 academic_data = df_To_categorize[df_To_categorize['Job'] == 'Faculty']
 sports_data = df_To_categorize[df_To_categorize['Job'] == 'Coach']
-# print(academic_data, sports_data)
 # double check
 # print(academic_data['Job'].unique())
 # print(sports_data['Job'].unique())
@@ -124,16 +124,12 @@ print("Sports positions are extracted.")
 Creating Payroll sum of each job type by the year for all 5 campus locations
 Storing them in separate files
 '''
-# academic_yearly_sum = academic_data.groupby(['YEAR', 'DEPARTMENT_LOCATION_ZIP_CODE'])['PAY_TOTAL_ACTUAL'].sum()
-# AYS_fp = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Academic_GroupedYearly_Location.csv'
 academic_yearly_sum = academic_data.pivot_table(index = 'YEAR', columns = 'DEPARTMENT_LOCATION_ZIP_CODE', values = 'PAY_TOTAL_ACTUAL', aggfunc = 'sum')
 AYS_fp = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Academic_Pivot_Yearly_Location.csv'
 academic_yearly_sum.to_csv(AYS_fp)
 print("Exported Payroll sum for Academic positions for each loaction for the years")
 
 # repeat for sports
-# sports_yearly_sum = sports_data.groupby(['YEAR', 'DEPARTMENT_LOCATION_ZIP_CODE'])['PAY_TOTAL_ACTUAL'].sum()
-# SYS_fp = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Sports_GroupedYearly_Location.csv'
 sports_yearly_sum = sports_data.pivot_table(index = 'YEAR', columns = 'DEPARTMENT_LOCATION_ZIP_CODE', values = 'PAY_TOTAL_ACTUAL', aggfunc = 'sum')
 SYS_fp = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Sports_Pivot_Yearly_Location.csv'
 sports_yearly_sum.to_csv(SYS_fp)
@@ -153,17 +149,56 @@ employment_trends.to_csv(filter_fp_YvJ)
 print('We have years and jobs file')
 
 # Get the percentage change, for better viz consumption.
-percentage_change = employment_trends.pct_change(periods=1) * 100
-percentage_rounded = percentage_change.round(3)
+percentage_change_job = employment_trends.pct_change(periods=1) * 100
+percentage_rounded = percentage_change_job.round(3)
 
 # Replace NaN values with 0 (assumes no change from 2010 as starting point)
-percentage_change.iloc[0] = 0
+percentage_change_job.iloc[0] = 0
 percentage_rounded.iloc[0] = 0
 
 # File path to save the percentage change data
-percentage_change_fp = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Percentage_Change_From_2010.csv'
-percentage_change.to_csv(percentage_change_fp, index=True)
+percentage_change_job_fp = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Percentage_Change_From_2010.csv'
+percentage_change_job.to_csv(percentage_change_job_fp, index=True)
 print("Percentage change from 2010 stored.")
 
 percentage_rounded_fp = '/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Percentage_Change_Rounded_From_2010.csv'
 percentage_rounded.to_csv(percentage_rounded_fp, index=True)
+
+'''
+Percentage of sports vs academics relative to total yearly spending
+'''
+total_payroll = dfYearSum_per_location
+academic = academic_yearly_sum
+sports = sports_yearly_sum
+
+academic.columns = total_payroll.columns
+sports.columns = total_payroll.columns
+
+# Calculate the total, academic, and sports percentages
+total_payroll.replace(np.nan, 0, inplace=True)  # Replace NaN with 0 in total payroll
+academic.replace(np.nan, 0, inplace=True)       # Replace NaN with 0 in academic
+sports.replace(np.nan, 0, inplace=True)         # Replace NaN with 0 in sports
+
+percentage_data = {}
+for year in total_payroll.index:
+    for location in total_payroll.columns:
+        total_spending = total_payroll.loc[year, location]
+        academic_spending = academic.loc[year, location]
+        sports_spending = sports.loc[year, location]
+
+        # Calculate percentages and store in a dictionary
+        academic_percentage = (academic_spending / total_spending * 100) if total_spending else 0
+        sports_percentage = (sports_spending / total_spending * 100) if total_spending else 0
+        percentage_data[(year, location)] = {
+            'Academic': round(academic_percentage, 3),
+            'Sports': round(sports_percentage, 3)
+        }
+
+# Convert dictionary to DataFrame
+percentage_df = pd.DataFrame.from_dict(percentage_data, orient='index')
+percentage_df.index.names = ['Year', 'Location']
+percentage_df.reset_index(inplace=True)
+
+# Save the data to CSV
+percentage_df.to_csv('/home/bigboiubu/repos/umb_s24/CS617_Viz/hw4/data/processed/Percentage_Spending_by_Type_and_Location.csv', index=False)
+print("Exported percentages of spending by type and location.")
