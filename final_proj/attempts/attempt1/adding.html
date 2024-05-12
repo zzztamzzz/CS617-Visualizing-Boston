@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animated Play Button</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f5f5f5;
+    }
+
+    .play-button {
+        width: 100px;
+        height: 100px;
+        background-color: #666;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        animation: pulsate 0.5s infinite alternate;
+        transition: opacity 1s, background-color 0.3s, transform 0.3s;
+    }
+
+    .play-button:hover {
+        transform: scale(1.05);
+        background-color: #FF4500;
+    }
+
+    @keyframes pulsate {
+        0% {
+            transform: scale(1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        100% {
+            transform: scale(1.1);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+    }
+
+    .play-icon {
+        color: white;
+        font-size: 40px;
+    }
+
+    .hidden {
+        display: none;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+    }
+
+    #header, #content {
+        transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    }
+
+    .shift-out {
+        transform: translateX(-100%) scale(0);
+    }
+
+    #content {
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 80%;
+        margin-top: 20px;
+    }
+
+    h1 {
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    p {
+        color: #666;
+    }
+
+    #fancyText {
+        font-size: 2em;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 20px;
+        color: #333;
+        animation: slideIn 1s forwards;
+    }
+
+    .activity {
+        color: #ff6347;
+        font-style: italic;
+    }
+
+    @keyframes slideIn {
+        0% {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeOut {
+        0% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0;
+        }
+    }
+
+    #fancyText.fade-out {
+        animation: fadeOut 1s forwards;
+    }
+
+    @media (max-width: 768px) {
+        body {
+            flex-direction: column;
+        }
+
+        .play-button {
+            width: 80px;
+            height: 80px;
+        }
+
+        h1, p {
+            font-size: 16px;
+        }
+
+        #content, #fancyText {
+            max-width: 95%;
+            margin: 10px;
+        }
+    }
+</style>
+</head>
+<body>
+<div id="header" class="fade-in">
+    <h1>Welcome</h1>
+    <p>I know you want to hit that button...</p>
+</div>
+
+<div class="play-button" id="playButton" onclick="transitionOut()" aria-label="Play Button to start animation">
+    <i class="play-icon fas fa-play"></i>
+</div>
+
+<div id="content" class="hidden">
+    <h2>More Content...</h2>
+    <p>This is the rest of your website content...</p>
+</div>
+<div id="fancyText" class="hidden">Late for your <span class="activity">[insert activity]</span>?</div>
+
+<div id="visualizations" class="hidden">
+    <!-- Your d3.js visualizations will be appended here -->
+    <svg id="lineChart"></svg>
+</div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+function changeButtonColor() {
+    var button = document.getElementById("playButton");
+    button.style.backgroundColor = getRandomColor();
+}
+
+// Change button color initially
+changeButtonColor();
+
+// Change button color continuously
+setInterval(changeButtonColor, 1000); // Change color every 1 second (1000 milliseconds)
+
+function transitionOut() {
+    var header = document.getElementById("header");
+    var content = document.getElementById("content");
+    var button = document.getElementById("playButton");
+    var fancyText = document.getElementById("fancyText");
+    var visualizations = document.getElementById("visualizations");
+
+    header.classList.add("shift-out");
+    content.classList.add("shift-out");
+    button.style.opacity = "0";
+
+    // Animate text out smoothly
+    fancyText.style.transition = "transform 1s, opacity 1s";
+    fancyText.style.transform = "translateX(-100%)";
+    fancyText.style.opacity = "0";
+
+    // Remove elements after animation completes
+    setTimeout(function() {
+        header.remove();
+        content.remove();
+        button.remove();
+
+        fancyText.classList.remove("hidden");
+    }, 1000); // Wait for 1 second (1000 milliseconds) for the animation to complete
+
+    // Fade out the text after 10 seconds
+    setTimeout(function() {
+        fancyText.classList.add("fade-out");
+
+        // Append your d3.js visualizations here
+        visualizations.classList.remove("hidden");
+        createLineChart(); // Function to create and display the line chart
+    }, 10000); // Wait for 10 seconds (10000 milliseconds) before fading out
+}
+
+function createLineChart() {
+    var svgWidth = 600, svgHeight = 400;
+    var margin = { top: 20, right: 20, bottom: 40, left: 50 };
+    var width = svgWidth - margin.left - margin.right;
+    var height = svgHeight - margin.top - margin.bottom;
+
+    var svg = d3.select("#lineChart")
+        .attr("width", svgWidth)
+        .attr("height", svgHeight)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var x = d3.scaleLinear().range([0, width]);
+    var y = d3.scaleLinear().range([height, 0]);
+
+    var line = d3.line()
+        .x(function(d, i) { return x(i); })
+        .y(function(d) { return y(d); })
+        .curve(d3.curveMonotoneX); // Applying smoothing to the line
+
+    var data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // Example data
+
+    x.domain([0, data.length - 1]);
+    y.domain([0, d3.max(data)]);
+
+    // Adding X-axis
+    svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x));
+
+    // Adding Y-axis
+    svg.append("g")
+        .call(d3.axisLeft(y));
+
+    // Adding the line
+    svg.append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 2)
+        .attr("d", line);
+
+    // Adding dots on the line
+    svg.selectAll(".dot")
+        .data(data)
+        .enter().append("circle") // Uses the enter().append() method
+        .attr("class", "dot") // Assign a class for styling
+        .attr("cx", function(d, i) { return x(i) })
+        .attr("cy", function(d) { return y(d) })
+        .attr("r", 5)
+        .attr("fill", "steelblue")
+        .on("mouseover", function(event, d) {
+            d3.select(this).attr("r", 8).style("fill", "#ff6347");
+            svg.append("text")
+               .attr("x", x(d) + 5)
+               .attr("y", y(d))
+               .attr("id", "tooltip")
+               .text(`${d}`);
+        })
+        .on("mouseout", function(d) {
+            d3.select(this).attr("r", 5).style("fill", "steelblue");
+            d3.select("#tooltip").remove();
+        });
+}
+
+// List of outdoor activities
+var activities = ["picnic at the Boston Common", "visit to New England Aquarium", "boat tour of the Boston Harbor", "Freedom Trail exploration", "Boston Duck Tour"];
+
+// Function to change the activity in the text
+function changeActivity() {
+    var activitySpan = document.querySelector("#fancyText .activity");
+    var randomIndex = Math.floor(Math.random() * activities.length);
+    activitySpan.textContent = activities[randomIndex];
+}
+
+// Change activity initially
+changeActivity();
+
+// Change activity every 2 seconds
+setInterval(changeActivity, 2000); // Change activity every 2 seconds (2000 milliseconds)
+
+</script>
+</body>
+</html>

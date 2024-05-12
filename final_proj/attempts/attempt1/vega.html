@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animated Play Button</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f5f5f5;
+    }
+
+    .play-button {
+        width: 100px;
+        height: 100px;
+        background-color: #666;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        animation: pulsate 0.5s infinite alternate;
+        transition: opacity 1s;
+    }
+
+    @keyframes pulsate {
+        0% {
+            transform: scale(1);
+        }
+        100% {
+            transform: scale(1.1);
+        }
+    }
+
+    .play-icon {
+        color: white;
+        font-size: 40px;
+    }
+
+    .hidden {
+        display: none;
+        opacity: 0;
+    }
+
+    #header, #content {
+        transition: transform 1s;
+    }
+
+    .shift-out {
+        transform: translateX(-100%) scale(0);
+    }
+
+    #content {
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 80%;
+        margin-top: 20px;
+    }
+
+    h1 {
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    p {
+        color: #666;
+    }
+
+    #fancyText {
+        font-size: 2em;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 20px;
+        color: #333; /* Change color as needed */
+        animation: slideIn 1s forwards;
+    }
+
+    .activity {
+        color: #ff6347; /* Change color as needed */
+        font-style: italic;
+    }
+
+    @keyframes slideIn {
+        0% {
+            transform: translateY(-100%);
+        }
+        100% {
+            transform: translateY(0);
+        }
+    }
+
+    /* Fade out animation */
+    @keyframes fadeOut {
+        0% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0;
+        }
+    }
+
+    /* Apply fade out animation after 9 seconds */
+    #fancyText.fade-out {
+        animation: fadeOut 1s forwards;
+    }
+
+    /* Set the size of the chart */
+    #lineChart {
+        width: 600px; /* Set the width of the chart */
+        height: 400px; /* Set the height of the chart */
+        margin: 0 auto; /* Center the chart horizontally */
+        opacity: 0; /* Set initial opacity to 0 */
+        animation: fadeIn 1s forwards 10s; /* Apply fade in animation after 10 seconds */
+    }
+
+    @keyframes fadeIn {
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+
+    /* Texts to the left of the chart */
+    #chartTexts {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 20px;
+        text-align: center;
+    }
+
+    #chartTitle {
+        font-size: 1.5em; /* Set the font size of the title */
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    #chartDescription {
+        font-size: 1em; /* Set the font size of the description */
+        color: #666;
+    }
+
+</style>
+</head>
+<body>
+<div id="header" class="fade-in">
+    <h1>Welcome</h1>
+    <p>I know you want to hit that button...</p>
+</div>
+
+<div class="play-button" id="playButton" onclick="transitionOut()">
+    <i class="play-icon fas fa-play"></i>
+</div>
+
+<div id="content" class="hidden">
+    <h2>More Content...</h2>
+    <p>This is the rest of your website content...</p>
+</div>
+<div id="fancyText" class="hidden">Late for your <span class="activity">[insert activity]</span>?</div>
+
+<div id="visualizations" class="hidden">
+    <!-- Your vega-lite chart will be embedded here -->
+    <div id="lineChart"></div>
+    <div id="chartTexts">
+        <div id="chartTitle">Growing City</div>
+        <div id="chartDescription">Boston's population trend over the years</div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+<script>
+function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+function changeButtonColor() {
+    var button = document.getElementById("playButton");
+    button.style.backgroundColor = getRandomColor();
+}
+
+// Change button color initially
+changeButtonColor();
+
+// Change button color continuously
+setInterval(changeButtonColor, 1000); // Change color every 1 second (1000 milliseconds)
+
+function transitionOut() {
+    var header = document.getElementById("header");
+    var content = document.getElementById("content");
+    var button = document.getElementById("playButton");
+    var fancyText = document.getElementById("fancyText");
+    var visualizations = document.getElementById("visualizations");
+
+    header.classList.add("shift-out");
+    content.classList.add("shift-out");
+    button.style.opacity = "0";
+
+    // Remove elements after animation completes
+    setTimeout(function() {
+        header.remove();
+        content.remove();
+        button.remove();
+
+        fancyText.classList.remove("hidden");
+    }, 1000); // Wait for 1 second (1000 milliseconds) for the animation to complete
+
+    // Fade out the text after 10 seconds
+    setTimeout(function() {
+        fancyText.classList.add("fade-out");
+
+        // Append your vega-lite chart here
+        visualizations.classList.remove("hidden");
+        var data = {
+          "values": [
+            {"x": 1, "y": 10},
+            {"x": 2, "y": 20},
+            {"x": 3, "y": 30},
+            {"x": 4, "y": 40},
+            {"x": 5, "y": 50}
+          ]
+        };
+        var spec = {
+          "width": 600, /* Set the width of the chart */
+          "height": 400, /* Set the height of the chart */
+          "mark": "line",
+          "encoding": {
+            "x": {"field": "x", "type": "quantitative"},
+            "y": {"field": "y", "type": "quantitative"}
+          }
+        };
+        vegaEmbed('#lineChart', spec);
+    }, 10000); // Wait for 10 seconds (10000 milliseconds) before fading out
+}
+
+// List of outdoor activities
+var activities = ["picnic at the Boston Common", "visit to New England Aquarium", "boat tour of the Boston Harbor", "Freedom Trail exploration", "Boston Duck Tour"];
+
+// Function to change the activity in the text
+function changeActivity() {
+    var activitySpan = document.querySelector("#fancyText .activity");
+    var randomIndex = Math.floor(Math.random() * activities.length);
+    activitySpan.textContent = activities[randomIndex];
+}
+
+// Change activity initially
+changeActivity();
+
+// Change activity every 2 seconds
+setInterval(changeActivity, 2000); // Change activity every 2 seconds (2000 milliseconds)
+
+</script>
+
+</body>
+</html>
