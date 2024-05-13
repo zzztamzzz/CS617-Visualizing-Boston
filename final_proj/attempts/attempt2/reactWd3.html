@@ -3,8 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Animated Play Button</title>
+<title>Animated Play Button and Dynamic Chart</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/react@17/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@17/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+<script src="https://d3js.org/d3.v6.min.js"></script>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -114,45 +118,83 @@
     #fancyText.fade-out {
         animation: fadeOut 1s forwards;
     }
-
 </style>
 </head>
 <body>
-<div id="header" class="fade-in">
-    <h1>Welcome</h1>
-    <p>I know you want to hit that button...</p>
-</div>
+<div id="root"></div> <!-- React will attach to this div -->
+<script type="text/babel">
+const { useState, useEffect } = React;
 
-<div class="play-button" id="playButton" onclick="transitionOut()">
-    <i class="play-icon fas fa-play"></i>
-</div>
+const LineChart = ({ data }) => {
+    useEffect(() => {
+        const svg = d3.select("#chartArea")
+            .append("svg")
+            .attr("width", 600)
+            .attr("height", 400);
+        
+        // Assuming data is an array of { date: Date, population: Number }
+        const xScale = d3.scaleTime().domain(d3.extent(data, d => d.date)).range([0, 560]);
+        const yScale = d3.scaleLinear().domain([0, d3.max(data, d => d.population)]).range([380, 0]);
 
-<div id="content" class="hidden">
-    <h2>More Content...</h2>
-    <p>This is the rest of your website content...</p>
-</div>
-<div id="fancyText" class="hidden">Late for your <span class="activity">[insert activity]</span>?</div>
+        const line = d3.line()
+            .x(d => xScale(d.date))
+            .y(d => yScale(d.population));
 
-<script>
-function getRandomColor() {
-    var letters = '0123456789ABCDEF';
-    var color = '#';
-    for (var i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
+        svg.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", "steelblue")
+            .attr("stroke-width", 1.5)
+            .attr("d", line);
+
+        return () => { d3.select("#chartArea svg").remove(); };
+    }, [data]);
+
+    return <div id="chartArea"></div>;
+};
+
+function App() {
+    const [data, setData] = useState([]);
+    const [showChart, setShowChart] = useState(false);
+
+    useEffect(() => {
+        // Simulate loading data
+        setTimeout(() => {
+            const parseDate = d3.timeParse("%Y-%m-%d");
+            setData([
+                { date: parseDate("2020-01-01"), population: 2551000 },
+                { date: parseDate("2021-01-01"), population: 2630000 }
+            ]);
+        }, 1000); // Load data after 1 second
+
+        // Show the chart after the text fades out
+        setTimeout(() => {
+            setShowChart(true);
+        }, 10000); // 10 seconds after page load
+    }, []);
+
+    return (
+        <div>
+            <div id="header" className="fade-in">
+                <h1>Welcome</h1>
+                <p>I know you want to hit that button...</p>
+            </div>
+
+            <div className="play-button" id="playButton" onClick={transitionOut}>
+                <i className="play-icon fas fa-play"></i>
+            </div>
+
+            <div id="content" className="hidden">
+                <h2>More Content...</h2>
+                <p>This is the rest of your website content...</p>
+            </div>
+            
+            <div id="fancyText" className="hidden">Late for your <span className="activity">[insert activity]</span>?</div>
+
+            {showChart && <LineChart data={data} />}
+        </div>
+    );
 }
-
-function changeButtonColor() {
-    var button = document.getElementById("playButton");
-    button.style.backgroundColor = getRandomColor();
-}
-
-// Change button color initially
-changeButtonColor();
-
-// Change button color continuously
-setInterval(changeButtonColor, 1000); // Change color every 1 second (1000 milliseconds)
 
 function transitionOut() {
     var header = document.getElementById("header");
@@ -165,7 +207,7 @@ function transitionOut() {
     button.style.opacity = "0";
 
     // Remove elements after animation completes
-    setTimeout(function() {
+    setTimeout(() => {
         header.remove();
         content.remove();
         button.remove();
@@ -174,28 +216,13 @@ function transitionOut() {
     }, 1000); // Wait for 1 second (1000 milliseconds) for the animation to complete
 
     // Fade out the text after 10 seconds
-    setTimeout(function() {
+    setTimeout(() => {
         fancyText.classList.add("fade-out");
     }, 9000); // Wait for 9 seconds (9000 milliseconds) before fading out
 }
 
-// List of outdoor activities
-var activities = ["picnic at the Boston Common", "visit to New England Aquarium", "boat tour of the Boston Harbor", "Freedom Trail exploration", "Boston Duck Tour"];
 
-// Function to change the activity in the text
-function changeActivity() {
-    var activitySpan = document.querySelector("#fancyText .activity");
-    var randomIndex = Math.floor(Math.random() * activities.length);
-    activitySpan.textContent = activities[randomIndex];
-}
-
-// Change activity initially
-changeActivity();
-
-// Change activity every 2 seconds
-setInterval(changeActivity, 2000); // Change activity every 2 seconds (2000 milliseconds)
-
+ReactDOM.render(<App />, document.getElementById('root'));
 </script>
-
 </body>
 </html>
