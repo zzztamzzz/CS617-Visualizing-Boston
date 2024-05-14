@@ -3,11 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Animated Play Button with Vega-Lite Visualization</title>
+<title>Animated Play Button</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
-<script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
-<script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -17,7 +14,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        height: 100vh;
+        min-height: 100vh;
         background-color: #f5f5f5;
     }
 
@@ -51,7 +48,6 @@
 
     .hidden {
         display: none;
-        opacity: 0;
     }
 
     #header, #content {
@@ -72,13 +68,37 @@
         margin-top: 20px;
     }
 
-    h1 {
-        color: #333;
-        margin-bottom: 10px;
+    #header h1 {
+        color: #003366;
+        font-size: 4em;
+        font-weight: 700;
+        text-align: center;
+        letter-spacing: 3px;
+        line-height: 1.1;
+        background: linear-gradient(90deg, #e0f7fa, #80deea);
+        padding: 30px;
+        margin: 20px 0;
+        text-shadow: 3px 3px 8px rgba(0,0,0,0.3);
+        border-radius: 10px;
+        border: 2px solid #00695c;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
-    p {
-        color: #666;
+    #header p {
+        color: #00695c;
+        font-size: 2em;
+        font-weight: 300;
+        font-style: italic;
+        text-align: center;
+        letter-spacing: 1.5px;
+        line-height: 1.6;
+        background: linear-gradient(90deg, #f1f8e9, #a5d6a7);
+        padding: 20px;
+        margin: 15px 0;
+        text-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+        border-radius: 10px;
+        border: 2px solid #2e7d32;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
     #fancyText {
@@ -125,13 +145,66 @@
         animation: fadeOut 1s forwards;
     }
 
-    #lineChart, #barChart {
-        width: 1100px;
-        height: 700px;
-        display: none;
+    .story-text {
+        width: 60%;
+        padding: 20px;
+        font-size: 1.2em;
+        line-height: 1.8;
+        background: linear-gradient(90deg, #fffde7, #fff9c4);
+        color: #37474f;
+        border-radius: 10px;
+        border: 2px solid #fdd835;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+        text-align: justify;
+        transition: opacity 1s;
     }
 
-    #chartTitle, #chartDescription {
+    .story-text.visible {
+        opacity: 1;
+    }
+
+    .charts {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .chart-container {
+        width: 100%;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .chart-link {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #00695c;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        margin: 10px;
+        transition: background-color 0.3s;
+    }
+
+    .chart-link:hover {
+        background-color: #004d40;
+    }
+
+    #nextButton {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        background-color: #666;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
         display: none;
     }
 </style>
@@ -153,16 +226,22 @@
 <div id="fancyText" class="hidden">Late for your <span class="activity">[insert activity]</span>?</div>
 <div id="subText" class="hidden">Is it because of traffic?</div>
 
-<div id="lineChart"></div>
-<div id="barChart"></div>
-<div id="chartTitle" class="hidden">
-    <h2>Chart Title</h2>
-</div>
-<div id="chartDescription" class="hidden">
-    <p>This is the chart description.</p>
+<div id="storySection" class="story-text hidden">
+    <p>Boston's population has steadily increased over the years. As more people reside in the same area, the demand for city space rises, leading to greater utilization of the city space and consequently higher traffic congestion. Tell me about it being the worst on the day you have somewhere to be!</p>
 </div>
 
+<div id="chartSection" class="container hidden">
+    <div class="charts">
+        <a href="annual_change_chart.html" class="chart-link" target="_blank">View Annual Change Chart</a>
+        <a href="population_change_chart.html" class="chart-link" target="_blank">View Population Change Chart</a>
+    </div>
+</div>
+
+<button id="nextButton" onclick="showNextContent()">Next</button>
+
 <script>
+const activities = ["picnic at the Boston Common", "visit to New England Aquarium", "boat tour of the Boston Harbor", "Freedom Trail exploration", "Boston Duck Tour"];
+
 function getRandomColor() {
     var letters = '0123456789ABCDEF';
     var color = '#';
@@ -206,16 +285,16 @@ function transitionOut() {
     setTimeout(function() {
         fancyText.classList.add("fade-out");
         subText.classList.add("fade-out");
-        setTimeout(showChartDetails, 1000); // Wait for 1 second for the fade-out animation
+        setTimeout(showStoryText, 1000); // Wait for 1 second for the fade-out animation
     }, 9000); // Wait for 9 seconds (9000 milliseconds) before fading out
 }
-
-var activities = ["picnic at the Boston Common", "visit to New England Aquarium", "boat tour of the Boston Harbor", "Freedom Trail exploration", "Boston Duck Tour"];
 
 function changeActivity() {
     var activitySpan = document.querySelector("#fancyText .activity");
     var randomIndex = Math.floor(Math.random() * activities.length);
     activitySpan.textContent = activities[randomIndex];
+
+    var fancyText = document.getElementById("fancyText");
 }
 
 // Change activity initially
@@ -224,87 +303,18 @@ changeActivity();
 // Change activity every 2 seconds
 setInterval(changeActivity, 2000); // Change activity every 2 seconds (2000 milliseconds)
 
-function showChartDetails() {
-    var chartTitle = document.getElementById("chartTitle");
-    var chartDescription = document.getElementById("chartDescription");
-    var lineChartDiv = document.getElementById("lineChart");
-    var barChartDiv = document.getElementById("barChart");
+function showStoryText() {
+    var storySection = document.getElementById("storySection");
+    storySection.classList.remove("hidden");
+    storySection.classList.add("visible");
+}
 
-    chartTitle.style.display = "block";
-    chartDescription.style.display = "block";
-    lineChartDiv.style.display = "block";
-    barChartDiv.style.display = "block";
+function showNextContent() {
+    var chartSection = document.getElementById("chartSection");
+    var nextButton = document.getElementById("nextButton");
 
-    // Define the Vega-Lite specification for the line chart
-    const lineSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-        "description": "Boston's Population Change Over The Years",
-        "width": 1100,
-        "height": 350,
-        "title": "Boston's Population Change percentage",
-        "data": { "url": "Annual_Change.csv" },
-        "mark": {
-            "type": "line",
-            "point": true
-        },
-        "encoding": {
-            "x": {
-                "field": "date",
-                "type": "temporal",
-                "title": "Year",
-                "scale": {
-                    "domain": ["1950", "2023"]
-                }
-            },
-            "y": {
-                "field": "Annual Change",
-                "type": "quantitative",
-                "title": "Annual Change"
-            }
-        }
-    };
-
-    // Define the Vega-Lite specification for the bar chart
-    const barSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-        "description": "Boston's Population Change Over The Years",
-        "width": 1100,
-        "height": 350,
-        "title": "Boston's Population Change Over The Years",
-        "data": { "url": "Population_Change.csv" },
-        "mark": "bar",
-        "encoding": {
-            "x": {
-                "field": "date",
-                "type": "temporal",
-                "title": "Year",
-                "scale": {
-                    "domain": ["1950", "2023"]
-                }
-            },
-            "y": {
-                "field": "Population",
-                "type": "quantitative",
-                "title": "Population Change"
-            },
-            "color": {
-                "value": "steelblue"
-            },
-            "opacity": {
-                "value": 0.5
-            }
-        }
-    };
-
-    // Embed the line chart in the lineChart div
-    vegaEmbed('#lineChart', lineSpec).then(result => {
-        // Access the Vega view instance as result.view
-    }).catch(console.error);
-
-    // Embed the bar chart in the barChart div
-    vegaEmbed('#barChart', barSpec).then(result => {
-        // Access the Vega view instance as result.view
-    }).catch(console.error);
+    chartSection.style.display = "flex"; // Ensure the charts are displayed
+    nextButton.style.display = "none"; // Hide the "Next" button
 }
 </script>
 </body>
