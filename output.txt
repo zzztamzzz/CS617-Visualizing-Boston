@@ -1,0 +1,34 @@
+Original file has 
+ Index(['OBJECTID', 'GEOID10', 'GEOID20', 'STATEFP', 'COUNTYFP', 'TRACTCE',
+       'BLKGRPCE', 'CSA', 'CSA_Name', 'CBSA',
+       ...
+       'D5DRI', 'D5DE', 'D5DEI', 'D2A_Ranked', 'D2B_Ranked', 'D3B_Ranked',
+       'D4A_Ranked', 'NatWalkInd', 'Shape_Length', 'Shape_Area'],
+      dtype='object', length=117) 
+
+Extracted all data associated with Massachusetts. Stored to ./final_proj/attempts/finalizing/walkability/extracted/only_Mass.csv
+Massachusetts state has: 
+ Index(['OBJECTID', 'GEOID10', 'GEOID20', 'STATEFP', 'COUNTYFP', 'TRACTCE',
+       'BLKGRPCE', 'CSA', 'CSA_Name', 'CBSA',
+       ...
+       'D5DRI', 'D5DE', 'D5DEI', 'D2A_Ranked', 'D2B_Ranked', 'D3B_Ranked',
+       'D4A_Ranked', 'NatWalkInd', 'Shape_Length', 'Shape_Area'],
+      dtype='object', length=117) 
+
+All Suffolk County data can be found in ./final_proj/attempts/finalizing/walkability/extracted/only_Suffolk_County.csv
+Suffolk county has: 
+ Index(['OBJECTID', 'GEOID10', 'GEOID20', 'STATEFP', 'COUNTYFP', 'TRACTCE',
+       'BLKGRPCE', 'CSA', 'CSA_Name', 'CBSA',
+       ...
+       'D5DRI', 'D5DE', 'D5DEI', 'D2A_Ranked', 'D2B_Ranked', 'D3B_Ranked',
+       'D4A_Ranked', 'NatWalkInd', 'Shape_Length', 'Shape_Area'],
+      dtype='object', length=117) 
+
+Filtered columns saved to ./final_proj/attempts/finalizing/walkability/extracted/filtered_Suffolk_County.csv
+Suffolk County has been narrowed down to have: 
+ Index(['CBSA_Name', 'CBSA_POP', 'CBSA_EMP', 'CBSA_WRK', 'Ac_Total', 'Pct_AO0',
+       'Pct_AO1', 'Pct_AO2p', 'TotEmp', 'D2R_JOBPOP', 'Shape_Length',
+       'Shape_Area', 'Workers', 'R_LowWageWk', 'R_MedWageWk', 'R_HiWageWk',
+       'D2A_EPHHM', 'NatWalkInd'],
+      dtype='object') 
+
