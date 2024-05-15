@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://www.massbuilds.com/
+HostUrl=https://api.massbuilds.com/developments.csv?filter={%22municipal%22:{%22col%22:%22municipal%22,%22name%22:%22Town/City%22,%22filter%22:%22discrete%22,%22value%22:[%22Boston%22]}}
