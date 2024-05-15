@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 def clean_population_data(file_path):
     # Load the data, skipping initial non-data lines
@@ -20,7 +21,7 @@ def clean_population_data(file_path):
     return data
 
 # Path to the CSV file
-file_path = '/home/bigboiubu/fresh_data/population/Boston-population-2024-05-12.csv'
+file_path = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/finalizing/population/original/Boston-population-2024-05-12.csv'
 
 # Clean the data
 cleaned_data = clean_population_data(file_path)
@@ -29,10 +30,15 @@ cleaned_data = clean_population_data(file_path)
 data_population_change = cleaned_data[['date', 'Population']]
 data_annual_change = cleaned_data[['date', 'Annual Change']]
 
-# Save the data to new CSV files
-output_file_path_pop_change = '/home/bigboiubu/fresh_data/population/Population_Change.csv'
-output_file_path_annual_change = '/home/bigboiubu/fresh_data/population/Annual_Change.csv'
+# Create 'polished' directory if it doesn't exist
+polished_dir = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/finalizing/population/polished'
+os.makedirs(polished_dir, exist_ok=True)
 
+# Define the file paths to save the cleaned data in the 'polished' directory
+output_file_path_pop_change = os.path.join(polished_dir, 'Population_Change.csv')
+output_file_path_annual_change = os.path.join(polished_dir, 'Annual_Change.csv')
+
+# Save the data to new CSV files in the 'polished' directory
 data_population_change.to_csv(output_file_path_pop_change, index=False)
 data_annual_change.to_csv(output_file_path_annual_change, index=False)
 
