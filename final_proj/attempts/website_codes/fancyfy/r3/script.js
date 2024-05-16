@@ -54,11 +54,68 @@ const contentData = [
     {
         text: `
             <h2>Walkability Index</h2>
-            <p>The Walkability Index measures how friendly an area is to walking. It considers factors such as the presence of footpaths, safety, and accessibility to amenities. This index helps understand how pedestrian-friendly Boston is, which can influence traffic patterns. Explore the interactive visualization below to see how different factors affect the walkability index.</p>
+            <p>The Walkability Index measures how friendly an area is to walking. It considers factors such as the presence of footpaths, safety, and accessibility to amenities. This index helps understand how pedestrian-friendly Boston is, which can influence traffic patterns. Explore the interactive visualizations below to see how different factors affect the walkability index.</p>
         `,
         visualization: `
             <div class="iframe-container">
-                <iframe src="walkability_chart.html"></iframe>
+                <iframe src="correlation_matrix.html"></iframe>
+            </div>
+        `
+    },
+    {
+        text: `
+            <h2>Walkability vs Employment</h2>
+            <p>This visualization shows the relationship between walkability and employment rates in different areas of Boston. Understanding this relationship helps in planning infrastructure improvements.</p>
+        `,
+        visualization: `
+            <div class="iframe-container">
+                <iframe src="walkability_vs_employment.html"></iframe>
+            </div>
+        `
+    },
+    {
+        text: `
+            <h2>Walkability vs Population</h2>
+            <p>This visualization shows the relationship between walkability and population in different areas of Boston. Understanding this relationship helps in planning infrastructure improvements.</p>
+        `,
+        visualization: `
+            <div class="iframe-container">
+                <iframe src="walkability_vs_population.html"></iframe>
+            </div>
+        `
+    },
+    {
+        text: `
+            <h2>Walkability vs Shape Area</h2>
+            <p>This visualization examines the correlation between walkability and the shape area of different regions. It provides insights into how the physical layout impacts walkability.</p>
+        `,
+        visualization: `
+            <div class="iframe-container">
+                <iframe src="walkability_vs_shape_area.html"></iframe>
+            </div>
+        `
+    },
+    {
+        text: `
+            <h2>Walkability vs Auto Ownership</h2>
+            <p>This visualization explores how auto ownership affects walkability. Understanding this dynamic is crucial for urban planning and reducing traffic congestion.</p>
+        `,
+        visualization: `
+            <div class="iframe-container">
+                <iframe src="walkability_vs_auto0.html"></iframe>
+                <iframe src="walkability_vs_auto1.html"></iframe>
+                <iframe src="walkability_vs_auto2p.html"></iframe>
+            </div>
+        `
+    },
+    {
+        text: `
+            <h2>Wage Distribution</h2>
+            <p>This visualization shows the wage distribution across different sectors and how it relates to walkability. It helps understand economic factors influencing traffic patterns.</p>
+        `,
+        visualization: `
+            <div class="iframe-container">
+                <iframe src="wage_distribution.html"></iframe>
             </div>
         `
     },
@@ -77,7 +134,7 @@ function updateContent() {
     const content = contentData[currentIndex];
     const textContentDiv = document.getElementById('text-content');
     const visualizationContentDiv = document.getElementById('visualization-content');
-    
+
     textContentDiv.style.opacity = 0;
     visualizationContentDiv.style.opacity = 0;
 
