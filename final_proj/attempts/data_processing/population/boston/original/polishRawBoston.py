@@ -21,7 +21,7 @@ def clean_population_data(file_path):
     return data
 
 # Path to the CSV file
-file_path = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/finalizing/population/boston/original/Boston-population-2024-05-15.csv'
+file_path = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/data_processing/population/boston/original/Boston-population-2024-05-15.csv'
 
 # Clean the data
 cleaned_data = clean_population_data(file_path)
@@ -31,7 +31,7 @@ data_population_change = cleaned_data[['date', 'Population']]
 data_annual_change = cleaned_data[['date', 'Annual Change']]
 
 # Create 'polished' directory if it doesn't exist
-polished_dir = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/finalizing/population/boston/polished'
+polished_dir = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/data_processing/population/boston/polished'
 os.makedirs(polished_dir, exist_ok=True)
 
 # Define the file paths to save the cleaned data in the 'polished' directory
