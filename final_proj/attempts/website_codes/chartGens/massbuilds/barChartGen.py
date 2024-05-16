@@ -5,26 +5,70 @@ import plotly.graph_objects as go
 file_path = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/website_codes/chartGens/massbuilds/filtered_traffic_related_projects.csv'
 df = pd.read_csv(file_path)
 
+# Categorize the projects
+completed_projects = df[df['status'] == 'completed']
+other_projects = df[df['status'] != 'completed']
+
 # Count the number of projects completed each year
-projects_per_year = df['year_compl'].value_counts().sort_index()
+completed_per_year = completed_projects['year_compl'].value_counts().sort_index()
+other_per_year = other_projects['year_compl'].value_counts().sort_index()
+
+# Ensure all indices (years) are included in both series for correct stacking
+all_years = pd.Index(sorted(set(completed_per_year.index).union(set(other_per_year.index))))
+completed_per_year = completed_per_year.reindex(all_years, fill_value=0)
+other_per_year = other_per_year.reindex(all_years, fill_value=0)
+
+# Calculate the average number of projects
+average_projects = completed_per_year.mean()
 
 # Define custom colors
-bar_color = 'rgb(34, 139, 34)'  # Forest Green
-background_color = 'rgb(245, 245, 245)'  # White Smoke
-grid_color = 'rgb(220, 220, 220)'  # Gainsboro
+completed_color = 'rgb(34, 139, 34)'  # Forest Green
+other_color = 'rgb(255, 165, 0)'  # Orange
+background_color = 'rgb(250, 250, 250)'  # Light Gray
+grid_color = 'rgb(220, 220, 220)'  # Very Light Gray
+average_line_color = 'rgb(0, 0, 0)'  # Black
 
-# Create bar chart with enhanced interactivity and visual appeal
-bar_chart = go.Figure([go.Bar(
-    x=projects_per_year.index,
-    y=projects_per_year.values,
-    marker_color=bar_color,
+# Create stacked bar chart
+bar_chart = go.Figure()
+
+# Add completed projects trace
+bar_chart.add_trace(go.Bar(
+    x=completed_per_year.index,
+    y=completed_per_year.values,
+    name='Completed Projects',
+    marker_color=completed_color,
     hoverinfo='x+y',
-    text=projects_per_year.values,
+    text=completed_per_year.values,
     textposition='outside',
-    hovertemplate='<b>Year:</b> %{x}<br><b>Projects:</b> %{y}<extra></extra>'
-)])
+    hovertemplate='<b>Year:</b> %{x}<br><b>Completed Projects:</b> %{y}<extra></extra>'
+))
+
+# Add other projects trace
+bar_chart.add_trace(go.Bar(
+    x=other_per_year.index,
+    y=other_per_year.values,
+    name='Other Projects',
+    marker_color=other_color,
+    hoverinfo='x+y',
+    text=other_per_year.values,
+    textposition='outside',
+    hovertemplate='<b>Year:</b> %{x}<br><b>Other Projects:</b> %{y}<extra></extra>'
+))
+
+# Add a dashed line for the average number of projects
+bar_chart.add_trace(go.Scatter(
+    x=completed_per_year.index,
+    y=[average_projects] * len(completed_per_year),
+    mode='lines',
+    name='Average Projects',
+    line=dict(color=average_line_color, width=2, dash='dash'),
+    hovertemplate='<b>Average Projects:</b> %{y:.2f}<extra></extra>'
+))
+
+# Update layout for the bar chart
 bar_chart.update_layout(
-    title='Number of Traffic-Related Projects Completed Each Year',
+    barmode='stack',
+    title='Number of Traffic-Related Projects Completed and Other Projects Each Year',
     xaxis_title='Year',
     yaxis_title='Number of Projects',
     plot_bgcolor=background_color,
@@ -33,6 +77,18 @@ bar_chart.update_layout(
     xaxis=dict(showgrid=True, gridcolor=grid_color),
     yaxis=dict(showgrid=True, gridcolor=grid_color),
     hovermode='x'
+)
+
+# Add a range slider for filtering the years
+bar_chart.update_layout(
+    xaxis=dict(
+        rangeslider=dict(
+            visible=True,
+            thickness=0.1,
+            bgcolor='rgb(200, 200, 200)'
+        ),
+        type="linear"
+    )
 )
 
 # Save bar chart as HTML
