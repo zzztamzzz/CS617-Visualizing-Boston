@@ -3,7 +3,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 # Load the data into a pandas DataFrame
-file_path = '/home/bigboiubu/fresh_data/massbuilds/csv/boston_filtered/massbuilds-20240512.csv'
+file_path = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/finalizing/massbuilds/csv/boston_filtered/massbuilds-20240512.csv'
 df = pd.read_csv(file_path)
 
 # Filter the data to include only completed projects
@@ -139,7 +139,7 @@ fig.update_layout(
 )
 
 # Save the plot to an HTML file
-html_file = '/home/bigboiubu/fresh_data/massbuilds/csv/boston_filtered/traffic_projects_plot.html'
+html_file = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/finalizing/massbuilds/csv/boston_filtered/traffic_projects_plot.html'
 fig.write_html(html_file)
 
 print(f'Plot saved to {html_file}')
