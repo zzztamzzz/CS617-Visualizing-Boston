@@ -27,6 +27,25 @@ def create_directory(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
+def filter_and_save_mass_data(mass_data_fp, useful_columns):
+    # Load the Massachusetts data
+    mass_df = pd.read_csv(mass_data_fp)
+    
+    # Filter the data to include only the useful columns
+    existing_columns = [col for col in useful_columns if col in mass_df.columns]
+    missing_columns = [col for col in useful_columns if col not in mass_df.columns]
+    
+    if missing_columns:
+        print(f"Warning: Missing columns in Massachusetts data: {missing_columns}")
+    
+    filtered_mass_df = mass_df[existing_columns]
+    
+    # Save the filtered data
+    filtered_mass_data_fp = path.join(path.dirname(mass_data_fp), 'filtered_only_mass.csv')
+    filtered_mass_df.to_csv(filtered_mass_data_fp, index=False)
+    print(f'Filtered Massachusetts data saved to {filtered_mass_data_fp}')
+    return filtered_mass_data_fp
+
 def main():
     search_directory = '.'
 
@@ -57,8 +76,18 @@ def main():
     mass_df = original_df[original_df['STATEFP'] == 25]
     mass_data_fp = path.join(just_massachusetts_dir, 'only_Mass.csv')
     mass_df.to_csv(mass_data_fp, index=False)
-
     print(f'Extracted all data associated with Massachusetts. Stored to {mass_data_fp}\n')
+
+    # Useful columns to keep
+    useful_columns = [
+        'CBSA_Name', 'CBSA_POP', 'CBSA_EMP', 'CBSA_WRK', 'Ac_Total', 'Pct_AO0', 'Pct_AO1', 
+        'Pct_AO2p', 'TotEmp', 'D2R_JOBPOP', 'Shape_Length', 'Shape_Area', 'Workers', 'R_LowWageWk',
+        'R_MedWageWk', 'R_HiWageWk', 'D2A_EPHHM', 'NatWalkInd'
+    ]
+
+    # Filter and save the Massachusetts data using useful columns
+    filter_and_save_mass_data(mass_data_fp, useful_columns)
+
     '''
     Shrink wave 2 
     Narrow down to data related to county.
@@ -67,11 +96,6 @@ def main():
     May as well get the other counties too.
     '''
     county_fips_codes = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27]
-    useful_columns = [
-        'CBSA_Name', 'CBSA_POP', 'CBSA_EMP', 'CBSA_WRK', 'Ac_Total', 'Pct_AO0', 'Pct_AO1', 
-        'Pct_AO2p', 'TotEmp', 'D2R_JOBPOP', 'Shape_Length', 'Shape_Area', 'Workers', 'R_LowWageWk',
-        'R_MedWageWk', 'R_HiWageWk', 'D2A_EPHHM', 'NatWalkInd'
-    ]
 
     for county_fips_code in county_fips_codes:
         county_name = get_county_name(county_fips_code)
@@ -94,7 +118,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
 '''
 Extracting different columns of data from the original file. We have a total of 117 columns :')
