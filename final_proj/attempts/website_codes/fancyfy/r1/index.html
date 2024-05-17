@@ -3,23 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boston Traffic Story</title>
+    <title>Traffic in Boston</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div id="app">
-        <header>
-            <h1>Boston Traffic Story</h1>
-        </header>
-        <div id="nav">
-            <button id="prevBtn" disabled>Previous</button>
-            <button id="nextBtn">Next</button>
-        </div>
-        <div id="content">
-            <!-- Content will be dynamically loaded here -->
-        </div>
-    </div>
+    <header>
+        <h1>Traffic in Boston</h1>
+        <nav>
+            <ul>
+                <li><a href="#introduction">Introduction</a></li>
+                <li><a href="#population">Population</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#walkability">Walkability</a></li>
+                <li><a href="#conclusion">Conclusion</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="introduction" class="content active">
+            <h2>Introduction</h2>
+            <p>Boston and its traffic...</p>
+            <button onclick="nextSection('population')">Next</button>
+        </section>
+        <section id="population" class="content hidden">
+            <h2>Population Increase</h2>
+            <p>There is an increase in Boston city's population...</p>
+            <iframe src="charts/population.html" frameborder="0"></iframe>
+            <button onclick="prevSection('introduction')">Previous</button>
+            <button onclick="nextSection('projects')">Next</button>
+        </section>
+        <section id="projects" class="content hidden">
+            <h2>City Projects</h2>
+            <p>Introduction to mass builds...</p>
+            <iframe src="charts/projects.html" frameborder="0"></iframe>
+            <button onclick="prevSection('population')">Previous</button>
+            <button onclick="nextSection('walkability')">Next</button>
+        </section>
+        <section id="walkability" class="content hidden">
+            <h2>Walkability Index</h2>
+            <p>Introduction to the walkability index...</p>
+            <iframe src="charts/walkability.html" frameborder="0"></iframe>
+            <button onclick="prevSection('projects')">Previous</button>
+            <button onclick="nextSection('conclusion')">Next</button>
+        </section>
+        <section id="conclusion" class="content hidden">
+            <h2>Conclusion</h2>
+            <p>Summary of the factors impacting traffic...</p>
+            <button onclick="prevSection('walkability')">Previous</button>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Traffic in Boston. All rights reserved.</p>
+    </footer>
     <script src="script.js"></script>
 </body>
 </html>
