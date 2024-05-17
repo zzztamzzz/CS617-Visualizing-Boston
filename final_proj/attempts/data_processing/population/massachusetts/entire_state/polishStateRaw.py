@@ -35,8 +35,8 @@ polished_dir = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attemp
 os.makedirs(polished_dir, exist_ok=True)
 
 # Define the file paths to save the cleaned data in the 'polished' directory
-output_file_path_pop_change = os.path.join(polished_dir, 'Population_Change_State.csv')
-output_file_path_annual_change = os.path.join(polished_dir, 'Annual_Change_State.csv')
+output_file_path_pop_change = os.path.join(polished_dir, 'Massachusetts_Population_Change_State.csv')
+output_file_path_annual_change = os.path.join(polished_dir, 'Massachusetts_Annual_Change_State.csv')
 
 # Save the data to new CSV files in the 'polished' directory
 data_population_change.to_csv(output_file_path_pop_change, index=False)
