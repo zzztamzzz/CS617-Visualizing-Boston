@@ -103,16 +103,6 @@ button:hover {
     background: #FB4D42;
 }
 
-footer {
-    text-align: center;
-    padding: 1rem;
-    background-color: #288BE4;
-    position: fixed;
-    width: 100%;
-    bottom: 0;
-    color: #FFFFFF;
-}
-
 .charts-container {
     display: flex;
     flex-wrap: wrap;

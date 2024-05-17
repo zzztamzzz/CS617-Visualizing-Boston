@@ -4,27 +4,22 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function nextSection(sectionId) {
-    const currentSection = document.querySelector('.content.active');
-    currentSection.classList.remove('active');
-    setTimeout(() => {
-        currentSection.style.display = 'none';
-        const nextSection = document.getElementById(sectionId);
-        nextSection.style.display = 'block';
-        setTimeout(() => {
-            nextSection.classList.add('active');
-        }, 10);
-    }, 500);
+    changeSection(sectionId);
 }
 
 function prevSection(sectionId) {
+    changeSection(sectionId);
+}
+
+function changeSection(sectionId) {
     const currentSection = document.querySelector('.content.active');
     currentSection.classList.remove('active');
     setTimeout(() => {
         currentSection.style.display = 'none';
-        const prevSection = document.getElementById(sectionId);
-        prevSection.style.display = 'block';
+        const targetSection = document.getElementById(sectionId);
+        targetSection.style.display = 'block';
         setTimeout(() => {
-            prevSection.classList.add('active');
+            targetSection.classList.add('active');
         }, 10);
     }, 500);
 }
@@ -35,16 +30,7 @@ function setupNavigation() {
         link.addEventListener('click', function (e) {
             e.preventDefault();
             const sectionId = this.getAttribute('href').substring(1);
-            const currentSection = document.querySelector('.content.active');
-            currentSection.classList.remove('active');
-            setTimeout(() => {
-                currentSection.style.display = 'none';
-                const targetSection = document.getElementById(sectionId);
-                targetSection.style.display = 'block';
-                setTimeout(() => {
-                    targetSection.classList.add('active');
-                }, 10);
-            }, 500);
+            changeSection(sectionId);
         });
     });
 }
