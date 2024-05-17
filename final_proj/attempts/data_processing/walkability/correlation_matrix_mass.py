@@ -60,6 +60,6 @@ heatmap.update_layout(
 )
 
 # Save the heatmap to an HTML file
-heatmap_html_path = f'{output_directory}/correlation_matrix.html'
+heatmap_html_path = f'{output_directory}/walkability_mass_correlation_matrix.html'
 heatmap.write_html(heatmap_html_path)
 print(f'Heatmap (Correlation Matrix) saved to: {heatmap_html_path}')
