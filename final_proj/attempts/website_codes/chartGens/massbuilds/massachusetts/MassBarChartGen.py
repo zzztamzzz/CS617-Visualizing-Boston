@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.graph_objects as go
 
 # Load the CSV file
-file_path = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/website_codes/chartGens/massbuilds/filtered_traffic_related_projects.csv'
+file_path = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/data_processing/massbuilds/csv/massachusetts/mass_filtered_traffic_related_projects.csv'
 df = pd.read_csv(file_path)
 
 # Categorize the projects
@@ -92,6 +92,6 @@ bar_chart.update_layout(
 )
 
 # Save bar chart as HTML
-le_destination = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/website_codes/chartGens/massbuilds/projects_bar_chart.html'
+le_destination = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/website_codes/chartGens/massbuilds/massachusetts/mass_projects_bar_chart.html'
 bar_chart.write_html(le_destination)
 print(f'Done. Feel free.\n {le_destination}')

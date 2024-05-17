@@ -6,8 +6,8 @@ import pandas as pd
 import plotly.graph_objects as go
 
 # Load data from CSV files
-annual_change_path = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/website_codes/chartGens/population/Annual_Change.csv'
-population_change_path = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/website_codes/chartGens/population/Population_Change.csv'
+annual_change_path = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/data_processing/population/massachusetts/polished/Massachusetts_Annual_Change_State.csv'
+population_change_path = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/data_processing/population/massachusetts/polished/Massachusetts_Population_Change_State.csv'
 
 annual_change_df = pd.read_csv(annual_change_path)
 population_change_df = pd.read_csv(population_change_path)
@@ -76,6 +76,6 @@ fig.update_layout(
 )
 
 # Save the combination chart as HTML
-chart_location = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/website_codes/chartGens/population/population_combination_chart.html'
+chart_location = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/website_codes/chartGens/population/mass/mass_population_combination_chart.html'
 fig.write_html(chart_location)
 print(f'Look at this BEAUT {chart_location}')
