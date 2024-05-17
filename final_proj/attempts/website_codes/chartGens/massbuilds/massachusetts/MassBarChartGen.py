@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.graph_objects as go
 
 # Load the CSV file
-file_path = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/data_processing/massbuilds/csv/massachusetts/mass_filtered_traffic_related_projects.csv'
+file_path = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/data_processing/massbuilds/csv/massachusetts/processed/mass_filtered_traffic_related_projects.csv'
 df = pd.read_csv(file_path)
 
 # Categorize the projects

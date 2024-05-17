@@ -1,8 +1,15 @@
 import pandas as pd
 import plotly.express as px
+import os
+
+# Get the directory of the current script
+script_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Load the data
-file_path = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/data_processing/walkability/just_massachusetts/filtered_only_mass.csv'
+file_path = os.path.join(script_dir, 'processed_data/just_massachusetts/filtered_only_mass.csv')
+if not os.path.exists(file_path):
+    raise FileNotFoundError(f"No such file: '{file_path}'")
+
 df = pd.read_csv(file_path)
 
 # Rename columns
@@ -28,7 +35,8 @@ column_rename_map = {
 df.rename(columns=column_rename_map, inplace=True)
 
 # Create output directory path
-output_directory = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/data_processing/walkability/plots/mass'
+output_directory = os.path.join(script_dir, 'plots/mass')
+os.makedirs(output_directory, exist_ok=True)
 
 # Heatmap: Correlation Matrix
 # Exclude non-numeric columns
@@ -60,6 +68,6 @@ heatmap.update_layout(
 )
 
 # Save the heatmap to an HTML file
-heatmap_html_path = f'{output_directory}/walkability_mass_correlation_matrix.html'
+heatmap_html_path = os.path.join(output_directory, 'walkability_mass_correlation_matrix.html')
 heatmap.write_html(heatmap_html_path)
 print(f'Heatmap (Correlation Matrix) saved to: {heatmap_html_path}')

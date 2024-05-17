@@ -65,9 +65,9 @@ def main():
     Main function to load, filter, and save traffic-related project data.
     """
     # Define the file paths
-    file_path = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/data_processing/massbuilds/csv/massachusetts/massbuilds-20240515.csv'
+    file_path = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/data_processing/massbuilds/csv/boston_filtered/massbuilds-20240515.csv'
     output_dir = os.path.join(os.path.dirname(file_path), 'processed')
-    output_file = 'mass_filtered_traffic_related_projects.csv'
+    output_file = 'boston_filtered_traffic_related_projects.csv'
 
     # Load the data
     df = load_data(file_path)

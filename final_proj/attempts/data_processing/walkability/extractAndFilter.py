@@ -9,12 +9,31 @@ Script to obtain all data entries containing the specified FIPS code in the orig
 """
 
 def find_file_path(file_name, search_dir='.'):
+    """
+    Recursively search for a file in the given directory.
+    
+    Parameters:
+    file_name (str): The name of the file to find.
+    search_dir (str): The directory to search in.
+    
+    Returns:
+    str: The full file path if found, otherwise raises FileNotFoundError.
+    """
     for root, dirs, files in os.walk(search_dir):
         if file_name in files:
             return path.join(root, file_name)
     raise FileNotFoundError(f"File not found: {file_name}")
 
 def get_county_name(fips_code):
+    """
+    Get the county name corresponding to a FIPS code.
+    
+    Parameters:
+    fips_code (int): The FIPS code of the county.
+    
+    Returns:
+    str: The name of the county.
+    """
     county_names = {
         1: "Barnstable County", 3: "Berkshire County", 5: "Bristol County", 7: "Dukes County", 
         9: "Essex County", 11: "Franklin County", 13: "Hampden County", 15: "Hampshire County", 
@@ -24,10 +43,26 @@ def get_county_name(fips_code):
     return county_names.get(fips_code, f"Unknown_FIPS_{fips_code}")
 
 def create_directory(directory):
+    """
+    Create a directory if it does not exist.
+    
+    Parameters:
+    directory (str): The path of the directory to create.
+    """
     if not os.path.exists(directory):
         os.makedirs(directory)
 
 def filter_and_save_mass_data(mass_data_fp, useful_columns):
+    """
+    Filter the Massachusetts data to include only the useful columns and save it.
+    
+    Parameters:
+    mass_data_fp (str): The file path to the Massachusetts data.
+    useful_columns (list): The list of useful columns to keep.
+    
+    Returns:
+    str: The file path to the filtered data.
+    """
     # Load the Massachusetts data
     mass_df = pd.read_csv(mass_data_fp)
     
@@ -47,7 +82,12 @@ def filter_and_save_mass_data(mass_data_fp, useful_columns):
     return filtered_mass_data_fp
 
 def main():
-    search_directory = '.'
+    """
+    Main function to extract and filter walkability data for Massachusetts and its counties.
+    """
+    # Get the directory of the current script
+    script_dir = path.dirname(path.abspath(__file__))
+    search_directory = path.join(script_dir, 'raw_data')
 
     # Find the original data file dynamically
     original_file_name = 'EPA_SmartLocationDatabase_V3_Jan_2021_Final.csv'
@@ -60,10 +100,10 @@ def main():
 
     # Create necessary directories
     base_dir = path.dirname(original_df_fp)
-    just_massachusetts_dir = path.join(base_dir, 'just_massachusetts')
+    just_massachusetts_dir = path.join(script_dir, 'processed_data/just_massachusetts')
     create_directory(just_massachusetts_dir)
     
-    extracted_dir = path.join(base_dir, 'byCounty')
+    extracted_dir = path.join(script_dir, 'processed_data/byCounty')
     create_directory(extracted_dir)
     create_directory(path.join(extracted_dir, 'all_inclusive'))
     create_directory(path.join(extracted_dir, 'specificKeywords'))
@@ -76,7 +116,7 @@ def main():
     mass_df = original_df[original_df['STATEFP'] == 25]
     mass_data_fp = path.join(just_massachusetts_dir, 'only_Mass.csv')
     mass_df.to_csv(mass_data_fp, index=False)
-    print(f'Extracted all data associated with Massachusetts. Stored to {mass_data_fp}\n')
+    print(f'\nExtracted all data associated with Massachusetts. Stored to {mass_data_fp}')
 
     # Useful columns to keep
     useful_columns = [
@@ -102,7 +142,7 @@ def main():
         county_df = mass_df[mass_df['COUNTYFP'] == county_fips_code]
         county_data_fp = path.join(extracted_dir, f'all_inclusive/{county_name.replace(" ", "_")}_data.csv')
         county_df.to_csv(county_data_fp, index=False)
-        print(f'All {county_name} data can be found in {county_data_fp}')
+        print(f'\nAll {county_name} data can be found in {county_data_fp}')
         
         existing_columns = [col for col in useful_columns if col in county_df.columns]
         missing_columns = [col for col in useful_columns if col not in county_df.columns]
@@ -113,41 +153,7 @@ def main():
         filtered_columns_df = county_df[existing_columns]
         filtered_columns_fp = path.join(extracted_dir, f'specificKeywords/filtered_{county_name.replace(" ", "_")}.csv')
         filtered_columns_df.to_csv(filtered_columns_fp, index=False)
-        print(f'Filtered columns for {county_name} saved to {filtered_columns_fp}\n')
-        # print(filtered_columns_df.describe()) 
+        print(f'Filtered columns for {county_name} saved to {filtered_columns_fp}')
 
 if __name__ == "__main__":
     main()
-
-'''
-Extracting different columns of data from the original file. We have a total of 117 columns :')
-Potentially useful columns from data:
-#     [Column Name]             [Description of what the column represents]                 ['X' means not using]
-1.      CBSA_Name       =>          Name of Core-Based Statistical Area
-2.      CBSA_POP        =>          Total population of CBSA
-3.      CBSA_EMP        =>          Total employment in CBSA
-4.      CBSA_WRK        =>          The number of workers in the CBSA                                
-5.      Ac_Total        =>          Total area in acres
-6.      TotPop          =>          Population of area
-7.      P_WrkAge        =>          Working age population proportion                                X           
-8.      AutoOwn0        =>          The number of households with zero vehicles.                     X
-9.      Pct_AO0         =>          The percentage of households with zero vehicles.                 
-10.     AutoOwn1        =>          The number of households with one vehicle.                       X        
-11.     Pct_AO1         =>          The percentage of households with one vehicle.
-12.     AutoOwn2p       =>          The number of households with two or more vehicles.              X
-13.     Pct_AO2p        =>          The percentage of households with two or more vehicles.              
-14.     TotEmp          =>          The total number of employed persons.
-15.     D2A_JPHH        =>          Jobs per household ratio.                                        X
-16.     D2C_TRPMX1      =>          Trip mix metric 1.                                               X
-17.     D2C_TRPMX2      =>          Trip mix metric 2.                                               X
-18.     D2C_TRIPEQ      =>          Trip equivalency metric                                          X
-19.     D2R_JOBPOP      =>          Job to population ratio.
-20.     Shape_Length    =>          The length of the geographic shape.
-21.     Shape_Area      =>          The area of the geographic shape.
-22.     Workers         =>          The total number of workers.                                     X
-23.     R_LowWageWk     =>          The number of workers earning low wages.
-24.     R_MedWageWk     =>          The number of workers earning medium wages.
-25.     R_HiWageWk      =>          The number of workers earning high wages.
-26.     D2A_EPHHM       =>          Employment per household metric
-27.     NatWalkInd      =>          National Walkability Index 
-'''

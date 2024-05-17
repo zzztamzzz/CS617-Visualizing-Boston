@@ -8,7 +8,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Directory containing the data files
 data_directory = os.path.join(script_dir, 'processed_data/byCounty/specificKeywords')
-output_directory_base = os.path.join(script_dir, 'plots/byCounty')
+output_directory_base = os.path.join(script_dir, 'plots/testing/Suffolk')
 
 # Rename columns
 column_rename_map = {
@@ -80,12 +80,11 @@ def process_county(file_path, output_directory, county_name):
     bar1.write_html(bar1_html_path)
     print(f'Bar Chart (Wage Distribution) saved to: {bar1_html_path}')
 
-# Process all county files
-for file_name in os.listdir(data_directory):
-    if file_name.startswith('filtered_') and file_name.endswith('_County.csv'):
-        file_path = os.path.join(data_directory, file_name)
-        county_name = file_name.split('_')[1]
-        output_directory = os.path.join(output_directory_base, county_name)
-        os.makedirs(output_directory, exist_ok=True)
-        print(f'Processing {county_name} County...')
-        process_county(file_path, output_directory, county_name)
+# Process Suffolk County file
+county_name = 'Suffolk'
+file_name = 'filtered_Suffolk_County.csv'
+file_path = os.path.join(data_directory, file_name)
+output_directory = output_directory_base
+os.makedirs(output_directory, exist_ok=True)
+print(f'Processing {county_name} County...')
+process_county(file_path, output_directory, county_name)
