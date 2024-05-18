@@ -32,7 +32,7 @@ def filter_traffic_related_projects(df):
         traffic_related_projects = df[
             (df['traffic_count_data_present'].notnull()) |
             (df['n_transit'].notnull())
-        ][['year_compl', 'status', 'traffic_count_data_present', 'n_transit']]
+        ][['year_compl', 'status', 'traffic_count_data_present', 'n_transit', 'singfamhu', 'smmultifam', 'lgmultifam', 'total_cost', 'ret_sqft', 'ofcmd_sqft', 'indmf_sqft', 'affrd_unit']]
         return traffic_related_projects
     except KeyError as e:
         print(f"Error filtering data: {e}")

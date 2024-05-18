@@ -2,8 +2,8 @@ import pandas as pd
 import plotly.graph_objects as go
 
 # Load data from CSV files
-annual_change_path = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/data_processing/population/massachusetts/polished/Massachusetts_Annual_Change_State.csv'
-population_change_path = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/data_processing/population/massachusetts/polished/Massachusetts_Population_Change_State.csv'
+annual_change_path = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/data_processing/population/boston/polished/Boston_Annual_Change.csv'
+population_change_path = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/data_processing/population/boston/polished/Boston_Population_Change.csv'
 
 annual_change_df = pd.read_csv(annual_change_path)
 population_change_df = pd.read_csv(population_change_path)
@@ -39,7 +39,7 @@ bar_chart.update_layout(
 )
 
 # Save bar chart as HTML
-bar_chart.write_html('/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/website_codes/chartGens/population/mass/mass_population_bar_chart.html')
+bar_chart.write_html('/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/chart_generations/population/boston/charts/boston_population_bar_chart.html')
 
 # Create line chart for percentage change in population
 line_chart = go.Figure([go.Scatter(
@@ -63,6 +63,6 @@ line_chart.update_layout(
 )
 
 # Save line chart as HTML
-chart_storage_fp = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/website_codes/chartGens/population/mass/mass_population_line_chart.html'
+chart_storage_fp = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/chart_generations/population/boston/charts/boston_population_line_chart.html'
 line_chart.write_html(chart_storage_fp)
-print(f'Go check them out: {chart_storage_fp}')
+print(f'Go check them out: /home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/chart_generations/population/boston/charts/')
