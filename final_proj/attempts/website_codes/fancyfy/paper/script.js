@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('introduction').classList.add('active');
     setupNavigation();
+    setupBackToTopButton();
 });
 
 function nextSection(sectionId) {
@@ -31,6 +32,24 @@ function setupNavigation() {
             e.preventDefault();
             const sectionId = this.getAttribute('href').substring(1);
             changeSection(sectionId);
+        });
+    });
+}
+
+function setupBackToTopButton() {
+    const backToTopButton = document.getElementById('back-to-top');
+    window.addEventListener('scroll', function () {
+        if (window.scrollY > 200) {
+            backToTopButton.style.display = 'block';
+        } else {
+            backToTopButton.style.display = 'none';
+        }
+    });
+
+    backToTopButton.addEventListener('click', function () {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
         });
     });
 }
