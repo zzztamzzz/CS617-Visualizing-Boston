@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('introduction').classList.add('active');
     setupNavigation();
     setupBackToTopButton();
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
 });
 
 function nextSection(sectionId) {
@@ -14,15 +16,15 @@ function prevSection(sectionId) {
 
 function changeSection(sectionId) {
     const currentSection = document.querySelector('.content.active');
-    currentSection.classList.remove('active');
-    setTimeout(() => {
+    if (currentSection) {
+        currentSection.classList.remove('active');
         currentSection.style.display = 'none';
-        const targetSection = document.getElementById(sectionId);
-        targetSection.style.display = 'block';
-        setTimeout(() => {
-            targetSection.classList.add('active');
-        }, 10);
-    }, 500);
+    }
+    const targetSection = document.getElementById(sectionId);
+    targetSection.style.display = 'block';
+    setTimeout(() => {
+        targetSection.classList.add('active');
+    }, 10);
 }
 
 function setupNavigation() {
@@ -32,6 +34,7 @@ function setupNavigation() {
             e.preventDefault();
             const sectionId = this.getAttribute('href').substring(1);
             changeSection(sectionId);
+            history.pushState(null, '', '#' + sectionId);
         });
     });
 }
@@ -52,4 +55,9 @@ function setupBackToTopButton() {
             behavior: 'smooth'
         });
     });
+}
+
+function handleHashChange() {
+    const sectionId = window.location.hash.substring(1) || 'introduction';
+    changeSection(sectionId);
 }

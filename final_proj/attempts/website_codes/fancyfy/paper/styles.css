@@ -124,6 +124,16 @@ li {
     margin-bottom: 0.5rem;
 }
 
+/* Ensure consistent font size for nested list items */
+li ul li {
+    font-size: inherit; /* Inherit the font size from the parent list item */
+}
+
+/* Ensure strong elements inside nested list items inherit the font size */
+li ul li strong {
+    font-size: inherit; /* Inherit the font size for strong elements */
+}
+
 /* Images */
 .images-container {
     display: flex;
@@ -144,7 +154,7 @@ li {
     transition: transform 0.3s;
 }
 
-.images-container img:hover {
+images-container img:hover {
     transform: scale(1.05);
 }
 
