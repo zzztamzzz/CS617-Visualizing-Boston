@@ -155,6 +155,18 @@ li {
     margin-top: 1rem;
 }
 
+.charts-container.side-by-side {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem; 
+}
+
+.charts-container.side-by-side iframe {
+    width: 48%;
+    height: 500px; 
+}
+
 iframe {
     width: 100%;
     height: 600px;
