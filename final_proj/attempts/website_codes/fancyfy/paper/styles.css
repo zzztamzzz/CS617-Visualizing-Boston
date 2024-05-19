@@ -39,8 +39,6 @@ nav ul {
     padding: 0;
     display: flex;
     justify-content: center;
-    /* Remove the following line */
-    /* border-bottom: 1px solid #ddd; */
     padding-bottom: 1rem;
 }
 
@@ -163,7 +161,7 @@ li {
 }
 
 .charts-container.side-by-side iframe {
-    width: 48%;
+    width: 50%;
     height: 500px; 
 }
 
