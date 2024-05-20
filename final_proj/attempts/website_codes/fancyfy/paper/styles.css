@@ -1,4 +1,4 @@
-/* General Styles */
+/* General */
 body {
     font-family: 'Times New Roman', Times, serif;
     margin: 0;
@@ -14,13 +14,11 @@ header {
     color: #FFFFFF;
     padding: 1rem 0;
     text-align: center;
-    border-bottom: 1px solid #ddd;
-    margin-bottom: 1rem;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+    margin: 0; 
+    border: none;
 }
 
+/* Title font */
 header h1 {
     font-family: 'Georgia', serif;
     font-size: 4rem;
@@ -30,8 +28,15 @@ header h1 {
     text-transform: uppercase;
 }
 
+/* Navigation bar stuff */
 nav {
-    margin: 1rem 0;
+    position: sticky;
+    top: 0;
+    background: linear-gradient(to right, #288BE4, #091F2F);
+    color: #FFFFFF;
+    z-index: 1000;
+    padding: 0.5rem 0;
+    margin: 0; /* Ensure no margin */
 }
 
 nav ul {
@@ -39,7 +44,7 @@ nav ul {
     padding: 0;
     display: flex;
     justify-content: center;
-    padding-bottom: 1rem;
+    margin: 0;
 }
 
 nav ul li {
@@ -57,6 +62,7 @@ nav ul li a:hover {
     color: #FB4D42;
 }
 
+/* All the narrative and charts in the middle of the website */
 main {
     padding: 1rem 2rem;
     max-width: 1200px;
@@ -65,6 +71,7 @@ main {
     animation: fadeIn 1s ease-in-out;
 }
 
+/* Page animation */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -126,12 +133,12 @@ li {
 
 /* Ensure consistent font size for nested list items */
 li ul li {
-    font-size: inherit; /* Inherit the font size from the parent list item */
+    font-size: inherit; 
 }
 
 /* Ensure strong elements inside nested list items inherit the font size */
 li ul li strong {
-    font-size: inherit; /* Inherit the font size for strong elements */
+    font-size: inherit;
 }
 
 /* Images */
@@ -154,7 +161,7 @@ li ul li strong {
     transition: transform 0.3s;
 }
 
-images-container img:hover {
+.images-container img:hover {
     transform: scale(1.05);
 }
 
@@ -205,7 +212,6 @@ footer {
     color: #FFFFFF;
     padding: 1rem 0;
     text-align: center;
-    border-top: 1px solid #ddd;
     margin-top: 1rem;
 }
 
@@ -244,5 +250,8 @@ footer p {
     }
     nav ul li {
         margin: 0.5rem 0;
+    }
+    .charts-container.side-by-side iframe {
+        width: 100%;
     }
 }

@@ -1,31 +1,10 @@
+// Simple script for the website behavior.
+// Script ensures when shortcut is clicked we go to the specific section by scrolling/
+// We also have a scroll to top button
 document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('introduction').classList.add('active');
     setupNavigation();
     setupBackToTopButton();
-    handleHashChange();
-    window.addEventListener('hashchange', handleHashChange);
 });
-
-function nextSection(sectionId) {
-    changeSection(sectionId);
-}
-
-function prevSection(sectionId) {
-    changeSection(sectionId);
-}
-
-function changeSection(sectionId) {
-    const currentSection = document.querySelector('.content.active');
-    if (currentSection) {
-        currentSection.classList.remove('active');
-        currentSection.style.display = 'none';
-    }
-    const targetSection = document.getElementById(sectionId);
-    targetSection.style.display = 'block';
-    setTimeout(() => {
-        targetSection.classList.add('active');
-    }, 10);
-}
 
 function setupNavigation() {
     const navLinks = document.querySelectorAll('nav ul li a');
@@ -33,8 +12,16 @@ function setupNavigation() {
         link.addEventListener('click', function (e) {
             e.preventDefault();
             const sectionId = this.getAttribute('href').substring(1);
-            changeSection(sectionId);
-            history.pushState(null, '', '#' + sectionId);
+            const section = document.getElementById(sectionId);
+            const headerOffset = document.querySelector('nav').offsetHeight;
+            const additionalOffset = 20; // Adjust this value as needed
+            const elementPosition = section.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset - additionalOffset;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
         });
     });
 }
@@ -55,9 +42,4 @@ function setupBackToTopButton() {
             behavior: 'smooth'
         });
     });
-}
-
-function handleHashChange() {
-    const sectionId = window.location.hash.substring(1) || 'introduction';
-    changeSection(sectionId);
 }
