@@ -72,6 +72,7 @@ heatmap.update_layout(
 )
 
 # Save the heatmap to an HTML file
-heatmap_html_path = os.path.join(output_directory, 'walkability_mass_correlation_matrix.html')
+# heatmap_html_path = os.path.join(output_directory, 'walkability_mass_correlation_matrix.html')
+heatmap_html_path = '/home/bigboiubu/repos/CS617-Visualizing-Boston/final_proj/attempts/chart_generations/walkability/pre_feedback/walkInd_heatmap.html'
 heatmap.write_html(heatmap_html_path)
 print(f'Heatmap (Correlation Matrix) saved to: {heatmap_html_path}')
